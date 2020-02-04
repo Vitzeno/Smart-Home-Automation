@@ -36,8 +36,10 @@ public class MainActivity extends AppCompatActivity {
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
 
+    private String mConnectedDeviceName = null;
 
-    public StringBuffer outStringBuff;
+
+    public StringBuffer outStringBuff = new StringBuffer("");
 
     private BTService BTservice;
 
@@ -145,18 +147,10 @@ public class MainActivity extends AppCompatActivity {
                 String deviceAddressString = listOfDevices.get(deviceNameString);
                 Toast.makeText(getApplicationContext(), "" + deviceNameString + " : " + deviceAddressString , Toast.LENGTH_LONG).show();
 
-                /*String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-                    // Get the BLuetoothDevice object
-                    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-                    // Attempt to connect to the device
-                    mChatService.connect(device);*/
-
 
                 String MAC_ADDR = deviceAddressString;
                 BluetoothDevice device = bluetoothAdapter.getRemoteDevice(MAC_ADDR);
                 BTservice.connect(device);
-
-                outStringBuff = new StringBuffer("");
             }
         });
     }
@@ -166,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
      * @param v
      */
     public void onClickButton(View v) {
-
+        byte[] send;
         switch (v.getId()) {
             case R.id.btnScan:
                 if (bluetoothAdapter.isDiscovering()) {
@@ -176,11 +170,18 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Scanning for bluetooth devices", Toast.LENGTH_LONG).show();
                 break;
             case R.id.btnOn:
-                //TODO
+                outStringBuff.setLength(0);
+                outStringBuff.append('H');
+                 send = outStringBuff.toString().getBytes();
+                BTservice.write(send);
+
                 break;
 
             case R.id.btnOff:
-                //TODO
+                outStringBuff.setLength(0);
+                outStringBuff.append('L');
+                send = outStringBuff.toString().getBytes();
+                BTservice.write(send);
                 break;
             default:
                 throw new RuntimeException("Unknown button ID");
@@ -224,14 +225,14 @@ public class MainActivity extends AppCompatActivity {
 
                     listOfDevices.put(device.getName(), device.getAddress());
 
-                    Toast.makeText(getApplicationContext(), "Found: " + device.getName(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "Found: " + device.getName(), Toast.LENGTH_LONG).show();
                 }
 
                 populateListView();
 
                 //Log.d("BT Discovery", deviceNames + " " + macAddresses);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                Toast.makeText(getApplicationContext(), "Finished scan, no devices found", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Finished scan, no devices found", Toast.LENGTH_LONG).show();
             }
         }
     };
@@ -258,6 +259,9 @@ public class MainActivity extends AppCompatActivity {
 
                     break;
                 case MESSAGE_DEVICE_NAME:
+
+                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    Toast.makeText(getApplicationContext(), "Connected to " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
 
                     break;
                 case MESSAGE_TOAST:

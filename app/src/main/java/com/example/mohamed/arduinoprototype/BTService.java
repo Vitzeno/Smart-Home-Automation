@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class BTService extends Service {
 
     private final static String name = "BTLightTest";
-    private static UUID MY_UUID = UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+    private static UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     private final BluetoothAdapter mAdapter;
     private final Handler mHandler;
@@ -264,8 +264,11 @@ public class BTService extends Service {
             try {
                 tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
             } catch (IOException e) {
+                Log.d("D", "IOException, createRfcommSocketToServiceRecord failed");
             }
             mmSocket = tmp;
+
+            Log.d("D", "connect thread constructor " + mmSocket);
         }
 
         public void run() {
@@ -277,6 +280,7 @@ public class BTService extends Service {
                mmSocket.connect();
            } catch (IOException e) {
                connectionFailed();
+               Log.d("D", "Connection failed");
                try {
                    mmSocket.close();
                } catch (IOException e2) {

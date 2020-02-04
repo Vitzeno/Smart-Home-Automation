@@ -16,7 +16,8 @@ void loop() {
 
     // read data from bluetooth reciver
     incomingData = Serial.read();
-    if (incomingData == 'b') {
+    
+    if (incomingData == 'B') {
       // HIGH voltage = turn on
       digitalWrite(LED1, HIGH);
       delay(1000);
@@ -24,13 +25,12 @@ void loop() {
       delay(1000);
     }
 
-    if (incomingData == '1') {
+    if (incomingData == 'H') {
       digitalWrite(LED1, HIGH);
     }
 
-    if (incomingData == '0') {
+    if (incomingData == 'L') {
       digitalWrite(LED1, LOW);
     }
-
   }
 }
