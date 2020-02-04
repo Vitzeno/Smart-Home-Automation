@@ -29,7 +29,7 @@ void loop() {
     }
 
     if (incomingData == '0') {
-      digitalWrite(LED1, HIGH);
+      digitalWrite(LED1, LOW);
     }
 
   }

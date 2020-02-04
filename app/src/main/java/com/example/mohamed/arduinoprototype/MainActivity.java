@@ -10,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,9 +20,26 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    public static final int MESSAGE_STATE_CHANGE = 1;
+    public static final int MESSAGE_READ = 2;
+    public static final int MESSAGE_WRITE = 3;
+    public static final int MESSAGE_DEVICE_NAME = 4;
+    public static final int MESSAGE_TOAST = 5;
+
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+
+
+    public StringBuffer outStringBuff;
+
+    private BTService BTservice;
 
     // Bluetooth adaptor to use
     BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -35,10 +54,16 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> deviceNames = new ArrayList<>();
     ArrayList<String> macAddresses = new ArrayList<>();
 
+    HashMap<String, String> listOfDevices = new HashMap<String, String>();
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         // Check if device supports bluetooth
         if (bluetoothAdapter == null) {
@@ -64,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
 
         populateListView();
         setUpListner();
+
+        BTservice = new BTService(this, mHandler);
+        BTservice.start();
     }
 
     /**
@@ -85,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
             for (BluetoothDevice device : pairedDevices) {
                 deviceNames.add(device.getName());
                 macAddresses.add(device.getAddress());
+
+                listOfDevices.put(device.getName(), device.getAddress());
             }
         } else {
             Toast.makeText(getApplicationContext(), "No Paired Bluetooth Devices Found.", Toast.LENGTH_LONG).show();
@@ -111,7 +141,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
                 TextView deviceName = (TextView) view.findViewById(R.id.txtName);
-                Toast.makeText(getApplicationContext(), "" + deviceName.getText().toString(), Toast.LENGTH_LONG).show();
+                String deviceNameString = deviceName.getText().toString();
+                String deviceAddressString = listOfDevices.get(deviceNameString);
+                Toast.makeText(getApplicationContext(), "" + deviceNameString + " : " + deviceAddressString , Toast.LENGTH_LONG).show();
+
+                /*String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                    // Get the BLuetoothDevice object
+                    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                    // Attempt to connect to the device
+                    mChatService.connect(device);*/
+
+
+                String MAC_ADDR = deviceAddressString;
+                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(MAC_ADDR);
+                BTservice.connect(device);
+
+                outStringBuff = new StringBuffer("");
             }
         });
     }
@@ -129,6 +174,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 bluetoothAdapter.startDiscovery();
                 Toast.makeText(getApplicationContext(), "Scanning for bluetooth devices", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.btnOn:
+                //TODO
+                break;
+
+            case R.id.btnOff:
+                //TODO
                 break;
             default:
                 throw new RuntimeException("Unknown button ID");
@@ -169,12 +221,15 @@ public class MainActivity extends AppCompatActivity {
                 if(device.getName() != null) {
                     deviceNames.add(device.getName());
                     macAddresses.add(device.getAddress());
+
+                    listOfDevices.put(device.getName(), device.getAddress());
+
                     Toast.makeText(getApplicationContext(), "Found: " + device.getName(), Toast.LENGTH_LONG).show();
                 }
 
                 populateListView();
 
-                Log.d("BT Discovery", deviceNames + " " + macAddresses);
+                //Log.d("BT Discovery", deviceNames + " " + macAddresses);
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 Toast.makeText(getApplicationContext(), "Finished scan, no devices found", Toast.LENGTH_LONG).show();
             }
@@ -191,5 +246,26 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
     }
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_WRITE:
+
+                    break;
+                case MESSAGE_READ:
+
+                    break;
+                case MESSAGE_DEVICE_NAME:
+
+                    break;
+                case MESSAGE_TOAST:
+
+                    break;
+            }
+        }
+    };
+
 }
 
