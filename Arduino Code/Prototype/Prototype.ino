@@ -9,6 +9,13 @@ void setup() {
   Serial.begin(9600);
 }
 
+void dot(int dur)
+{
+  digitalWrite(LED1, HIGH);
+  delay(dur);
+  digitalWrite(LED1, LOW);
+  delay(dur);
+}
 // the loop function runs over and over again forever
 void loop() {
   // if hardware serial comms available (i.e bluetooth)
@@ -16,7 +23,7 @@ void loop() {
 
     // read data from bluetooth reciver
     incomingData = Serial.read();
-    
+
     if (incomingData == 'B') {
       // HIGH voltage = turn on
       digitalWrite(LED1, HIGH);
@@ -32,5 +39,25 @@ void loop() {
     if (incomingData == 'L') {
       digitalWrite(LED1, LOW);
     }
-  }
+
+    if (incomingData == 'S') {
+      for(int i = 0; i < 100; i++)
+      {
+        dot(100);
+        dot(100);
+        dot(100);
+        delay(500);
+        dot(300);
+        dot(300);
+        dot(300);
+        delay(500);
+        dot(100);
+        dot(100);
+        dot(100);
+
+        delay(1000);
+      }
+      
+    }
+}
 }

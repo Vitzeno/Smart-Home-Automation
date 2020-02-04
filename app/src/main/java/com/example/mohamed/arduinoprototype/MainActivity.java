@@ -183,6 +183,12 @@ public class MainActivity extends AppCompatActivity {
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
                 break;
+            case R.id.btnSOS:
+                outStringBuff.setLength('0');
+                outStringBuff.append('S');
+                send = outStringBuff.toString().getBytes();
+                BTservice.write(send);
+                break;
             default:
                 throw new RuntimeException("Unknown button ID");
 
