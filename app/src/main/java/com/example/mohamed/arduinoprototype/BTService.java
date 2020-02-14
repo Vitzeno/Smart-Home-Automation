@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class BTService extends Service {
 
     private final static String name = "BTLightTest";
-    private static UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    private static UUID MY_UUID = UUID.fromString("94f39d29-7d6d-437d-973b-fba39e49d4ee");
 
     private final BluetoothAdapter mAdapter;
     private final Handler mHandler;
