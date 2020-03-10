@@ -7,46 +7,51 @@ import subprocess
 import Radio as radio
 
 class BluetoothHandler:
+
+    server_sock = []
+    client_sock = []
+    client_info = []
     
-    def __init__(self):
-        self.server_sock = BluetoothHandler
-        self.client_sock = BluetoothHandler
-        self.client_info = BluetoothHandler
-        print("Constructor CS: ", self.client_sock, " SS: ", self.server_sock)
+    @classmethod
+    def __init__(cls):
+        print("Constructor CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
 
-    def connectBT(self, dict, event, lock):
-        print("pre-connectBT CS: ", self.client_sock, " SS: ", self.server_sock)
+    @classmethod
+    def connectBT(cls, dict, event, lock):
+        print("pre-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         # setup bt connection
-        self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        self.server_sock.bind(("", bluetooth.PORT_ANY))
-        self.server_sock.listen(1)
+        BluetoothHandler.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        BluetoothHandler.server_sock.bind(("", bluetooth.PORT_ANY))
+        BluetoothHandler.server_sock.listen(1)
 
-        port = self.server_sock.getsockname()[1]
+        port = BluetoothHandler.server_sock.getsockname()[1]
         
         uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 
-        bluetooth.advertise_service(self.server_sock, "SampleServer", service_id=uuid,
+        bluetooth.advertise_service(BluetoothHandler.server_sock, "SampleServer", service_id=uuid,
                                     service_classes=[uuid, bluetooth.SERIAL_PORT_CLASS],
                                     profiles=[bluetooth.SERIAL_PORT_PROFILE],
                                     # protocols=[bluetooth.OBEX_UUID]
                                     )
 
         print("Waiting for connection on RFCOMM channel", port)
-        self.client_sock, self.client_info = self.server_sock.accept()
-        print("Accepted connection from", self.client_info)
+        BluetoothHandler.client_sock, BluetoothHandler.client_info = BluetoothHandler.server_sock.accept()
+        print("Accepted connection from", BluetoothHandler.client_info)
 
         lock.acquire()
         dict["test"] = 5
         event.set()
         lock.release()
-        print("post-connectBT CS: ", self.client_sock, " SS: ", self.server_sock)
+        print("post-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
 
-    def cleanUpBT(self):
-        print("cleanUp CS: ", self.client_sock, " SS: ", self.server_sock)
-        self.client_sock.close()
-        self.server_sock.close()
+    @classmethod
+    def cleanUpBT(cls):
+        print("cleanUp CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
+        BluetoothHandler.client_sock.close()
+        BluetoothHandler.server_sock.close()
 
-    def close():
+    @classmethod
+    def close(cls):
         print("Close")
 
 if __name__ == '__main__':
@@ -57,9 +62,7 @@ if __name__ == '__main__':
         lock = Lock()
         event = Event()
 
-        BTHandler = BluetoothHandler()
-
-        proc = Process(target = BTHandler.connectBT, args = (dictionary, event, lock))
+        proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, event, lock))
         proc.start()
 
         try:
@@ -67,7 +70,6 @@ if __name__ == '__main__':
                 event.wait(5)
                 if event.is_set():
                     print(dictionary)
-                    print("External CS: ", BTHandler.client_sock, " SS: ", BTHandler.server_sock)
                 event.clear()
         except (OSError, KeyboardInterrupt) as e:
             radio.cleanUp()
@@ -75,5 +77,5 @@ if __name__ == '__main__':
 
         proc.join()
 
-        BTHandler.cleanUpBT()
+        BluetoothHandler.cleanUpBT()
         radio.cleanUp()
