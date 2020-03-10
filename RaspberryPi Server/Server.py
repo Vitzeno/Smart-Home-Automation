@@ -11,13 +11,20 @@ class BluetoothHandler:
     server_sock = []
     client_sock = []
     client_info = []
+
+    MessageEvent = []
+    EndEvent = []
+    Dict = []
+    Lock = []
+
+
     
     @classmethod
     def __init__(cls):
         print("Constructor CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
 
     @classmethod
-    def connectBT(cls, dict, event, lock):
+    def connectBT(cls, Dict, MessageEvent, EndEvent, lock):
         print("pre-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         # setup bt connection
         BluetoothHandler.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -38,11 +45,32 @@ class BluetoothHandler:
         BluetoothHandler.client_sock, BluetoothHandler.client_info = BluetoothHandler.server_sock.accept()
         print("Accepted connection from", BluetoothHandler.client_info)
 
-        lock.acquire()
-        dict["test"] = 5
-        event.set()
-        lock.release()
+        BluetoothHandler.Lock = lock
+        BluetoothHandler.MessageEvent = MessageEvent
+        BluetoothHandler.EndEvent = EndEvent
+        BluetoothHandler.Dict = Dict
+
         print("post-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
+        BluetoothHandler.communication()
+    
+    @classmethod
+    def communication(cls):
+        while True:
+            try:
+                BluetoothHandler.Lock.acquire()
+                BluetoothHandler.Dict["test"] = 5
+                BluetoothHandler.MessageEvent.set()
+                BluetoothHandler.Lock.release()
+
+                if BluetoothHandler.EndEvent.is_set():
+                    BluetoothHandler.cleanUpBT()
+                    BluetoothHandler.EndEvent.clear()
+                    break
+            except (OSError, KeyboardInterrupt) as e:
+                BluetoothHandler.cleanUpBT()
+                BluetoothHandler.EndEvent.clear()
+                break
+                
 
     @classmethod
     def cleanUpBT(cls):
@@ -60,22 +88,26 @@ if __name__ == '__main__':
     with Manager() as manager:
         dictionary = manager.dict()
         lock = Lock()
-        event = Event()
+        MessageEvent = Event()
+        EndEvent = Event()
 
-        proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, event, lock))
+        print(EndEvent.is_set())
+
+        proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, lock))
         proc.start()
 
         try:
             while True:
-                event.wait(5)
-                if event.is_set():
+                MessageEvent.wait(5)
+                if MessageEvent.is_set():
                     print(dictionary)
-                event.clear()
+                    pass
+                MessageEvent.clear()
         except (OSError, KeyboardInterrupt) as e:
+            EndEvent.set()
             radio.cleanUp()
-            pass
-
+        
+        print("Waiting to join")
         proc.join()
-
-        BluetoothHandler.cleanUpBT()
         radio.cleanUp()
+        print("Gracefully Quit")
