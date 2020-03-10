@@ -7,25 +7,24 @@ import subprocess
 import Radio as radio
 
 class BluetoothHandler:
-
+    # Bluetooth socket attributes
     server_sock = []
     client_sock = []
     client_info = []
 
+    # Multiprocessing synchronisation
     MessageEvent = []
     EndEvent = []
     Dict = []
     Lock = []
 
-
-    
     @classmethod
     def __init__(cls):
         print("Constructor CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
 
     @classmethod
     def connectBT(cls, Dict, MessageEvent, EndEvent, lock):
-        print("pre-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
+        #print("pre-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         # setup bt connection
         BluetoothHandler.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         BluetoothHandler.server_sock.bind(("", bluetooth.PORT_ANY))
@@ -50,15 +49,15 @@ class BluetoothHandler:
         BluetoothHandler.EndEvent = EndEvent
         BluetoothHandler.Dict = Dict
 
-        print("post-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
-        BluetoothHandler.communication()
+        #print("post-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
+        BluetoothHandler.startCommunication()
     
     @classmethod
-    def communication(cls):
+    def startCommunication(cls):
         while True:
             try:
                 BluetoothHandler.Lock.acquire()
-                BluetoothHandler.Dict["test"] = 5
+                BluetoothHandler.Dict["recv"] = BluetoothHandler.client_sock.recv(1024)
                 BluetoothHandler.MessageEvent.set()
                 BluetoothHandler.Lock.release()
 
@@ -74,7 +73,7 @@ class BluetoothHandler:
 
     @classmethod
     def cleanUpBT(cls):
-        print("cleanUp CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
+        #print("cleanUp CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         BluetoothHandler.client_sock.close()
         BluetoothHandler.server_sock.close()
 
@@ -91,8 +90,6 @@ if __name__ == '__main__':
         MessageEvent = Event()
         EndEvent = Event()
 
-        print(EndEvent.is_set())
-
         proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, lock))
         proc.start()
 
@@ -100,7 +97,11 @@ if __name__ == '__main__':
             while True:
                 MessageEvent.wait(5)
                 if MessageEvent.is_set():
-                    print(dictionary)
+                    print(dictionary["recv"].decode("utf-8"))
+                    if(dictionary["recv"].decode("utf-8") == 'H'):
+                        radio.switchSocket(1, True)
+                    if(dictionary["recv"].decode("utf-8") == 'L'):
+                        radio.switchSocket(1, False)
                     pass
                 MessageEvent.clear()
         except (OSError, KeyboardInterrupt) as e:

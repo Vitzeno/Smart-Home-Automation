@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import time
 import subprocess
 
 def setUp():
@@ -32,6 +33,46 @@ def setUp():
     GPIO.output (15, False)
     GPIO.output (16, False)
     GPIO.output (13, False)
+
+def switchSocket(socket, state):
+    output = [True, True, True, True]
+    output[3] = True if(state) else False
+
+    if(socket == 1):
+        output[0] = True 
+        output[1] = True
+        output[2] = True
+    
+    if(socket == 2):
+        output[0] = False 
+        output[1] = True
+        output[2] = True
+
+    if(socket == 3):
+        output[0] = True 
+        output[1] = False
+        output[2] = True
+
+    if(socket == 4):
+        output[0] = False 
+        output[1] = False
+        output[2] = True
+
+    
+    print(output[0], ": ", output[1], ": ", output[2], ": ", output[3])
+
+    GPIO.output (11, output[0])
+    GPIO.output (15, output[1])
+    GPIO.output (16, output[2])
+    GPIO.output (13, output[3])
+    # let it settle, encoder requires this
+    time.sleep(0.1)	
+    # Enable the modulator
+    GPIO.output (22, True)
+    # keep enabled for a period
+    time.sleep(0.25)
+    # Disable the modulator
+    GPIO.output (22, False)
 
 def cleanUp():
     GPIO.cleanup()
