@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 BTservice.write(send);
                 break;
             case R.id.btnSOS:
-                outStringBuff.setLength('0');
+                outStringBuff.setLength(0);
                 outStringBuff.append('S');
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);

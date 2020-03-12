@@ -92,16 +92,24 @@ if __name__ == '__main__':
 
         proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, lock))
         proc.start()
+        switch = True
 
         try:
             while True:
                 MessageEvent.wait(5)
+
+                
+
                 if MessageEvent.is_set():
                     print(dictionary["recv"].decode("utf-8"))
                     if(dictionary["recv"].decode("utf-8") == 'H'):
                         radio.switchSocket(1, True)
                     if(dictionary["recv"].decode("utf-8") == 'L'):
                         radio.switchSocket(1, False)
+                    
+                    if(dictionary["recv"].decode("utf-8") == 'S'):
+                        switch = not switch
+                        radio.switchSocket(2, switch)
                     pass
                 MessageEvent.clear()
         except (OSError, KeyboardInterrupt) as e:
