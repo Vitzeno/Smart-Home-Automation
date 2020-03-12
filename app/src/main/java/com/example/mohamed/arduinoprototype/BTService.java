@@ -43,6 +43,7 @@ public class BTService extends Service {
         mHandler = handler;
     }
 
+
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
