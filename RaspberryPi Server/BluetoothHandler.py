@@ -1,4 +1,5 @@
 import bluetooth
+import subprocess
 
 class BluetoothHandler:
     # Bluetooth socket attributes
@@ -9,11 +10,18 @@ class BluetoothHandler:
     # Multiprocessing synchronisation
     MessageEvent = []
     EndEvent = []
+    ConnectEvent = []
     Dict = []
     Lock = []
 
     @classmethod
-    def connectBT(cls, Dict, MessageEvent, EndEvent, lock):
+    def connectBT(cls, Dict, MessageEvent, EndEvent, ConnectEvent, lock):
+        BluetoothHandler.Lock = lock
+        BluetoothHandler.MessageEvent = MessageEvent
+        BluetoothHandler.EndEvent = EndEvent
+        BluetoothHandler.Dict = Dict
+        BluetoothHandler.ConnectEvent = ConnectEvent
+
         #print("pre-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         # setup bt connection
         BluetoothHandler.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -33,17 +41,16 @@ class BluetoothHandler:
         print("Waiting for connection on RFCOMM channel", port)
         BluetoothHandler.client_sock, BluetoothHandler.client_info = BluetoothHandler.server_sock.accept()
         print("Accepted connection from", BluetoothHandler.client_info)
+        BluetoothHandler.ConnectEvent.set()
+        BluetoothHandler.Dict["name"] = BluetoothHandler.client_info[0]
 
-        BluetoothHandler.Lock = lock
-        BluetoothHandler.MessageEvent = MessageEvent
-        BluetoothHandler.EndEvent = EndEvent
-        BluetoothHandler.Dict = Dict
 
         #print("post-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         BluetoothHandler.startCommunication()
     
     @classmethod
     def startCommunication(cls):
+        print("Communination Running...")
         while True:
             try:
                 BluetoothHandler.Lock.acquire()
@@ -55,6 +62,7 @@ class BluetoothHandler:
                     BluetoothHandler.cleanUpBT()
                     BluetoothHandler.EndEvent.clear()
                     break
+                    
             except (OSError, KeyboardInterrupt) as e:
                 BluetoothHandler.cleanUpBT()
                 BluetoothHandler.EndEvent.clear()
