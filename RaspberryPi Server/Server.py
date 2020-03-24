@@ -3,14 +3,18 @@ import bluetooth
 import RPi.GPIO as GPIO
 import time
 import subprocess
+import json
+import jsonpickle
+from json import JSONEncoder
 
-import Radio as radio
+import Radio as Radio
 import BluetoothHandler as BTHandler
+import Devices as Devices
 
 running = []
 
 def comms():
-    radio.setUp()
+    Radio.setUp()
     dictionary = Manager().dict()
     dictionary["recv"] = []
     dictionary["name"] = []
@@ -46,33 +50,37 @@ def comms():
                 print(dictionary["recv"].decode("utf-8"))
 
                 if(dictionary["recv"].decode("utf-8") == 'H'):
-                    radio.switchSocket(1, True)
+                    Radio.switchSocket(1, True)
                 if(dictionary["recv"].decode("utf-8") == 'L'):
-                    radio.switchSocket(1, False)
+                    Radio.switchSocket(1, False)
                 
                 if(dictionary["recv"].decode("utf-8") == 'S'):
                     switch = not switch
-                    radio.switchSocket(2, switch)
+                    Radio.switchSocket(2, switch)
                 pass
             MessageEvent.clear()
     except (OSError, KeyboardInterrupt) as e:
         EndEvent.set()
         ConnectEvent.clear()
         proc.join()
-        radio.cleanUp()
+        Radio.cleanUp()
         running = False
     
-    radio.cleanUp()
+    Radio.cleanUp()
     EndEvent.set()
     ConnectEvent.clear()
     print("Waiting to join")
     proc.join()
-    radio.cleanUp()
+    Radio.cleanUp()
 
 if __name__ == '__main__':
+
+    device = Devices.Devices(1, "RGB Strip")
+    deviceJSON = jsonpickle.encode(device, unpicklable = False)
+    print(deviceJSON)
 
     running = True
     while running:
         comms()
-    radio.cleanUp()
+    Radio.cleanUp()
     print("Gracefully Quit")
