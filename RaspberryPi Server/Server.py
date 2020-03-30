@@ -5,11 +5,13 @@ import time
 import subprocess
 import json
 import jsonpickle
+import os
 from json import JSONEncoder
 
 import Radio as Radio
 import BluetoothHandler as BTHandler
 import Devices as Devices
+import Serialise as Serialise
 
 running = []
 
@@ -75,9 +77,13 @@ def comms():
 
 if __name__ == '__main__':
 
+    Serialise.setDirectory()
+
     device = Devices.Devices(1, "RGB Strip")
-    deviceJSON = jsonpickle.encode(device, unpicklable = False)
-    print(deviceJSON)
+    print(type(device))
+    Serialise.serialiseObjectToFile(device, 'devices.txt')
+    thawedDevice = Serialise.deserialiseObjectFromFile('devices.txt')
+    print(type(thawedDevice))
 
     running = True
     while running:
