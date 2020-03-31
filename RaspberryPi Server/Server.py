@@ -7,10 +7,12 @@ import subprocess
 import json
 import jsonpickle
 import os
+
 import Radio as Radio
-import BluetoothHandler as BTHandler
-import Devices as Devices
 import Serialise as Serialise
+from BluetoothHandler import BluetoothHandler
+from Devices import Devices
+from Parser import Parser
 
 running = []
 
@@ -25,7 +27,7 @@ def comms():
     EndEvent = Event()
     ConnectEvent = Event()
   
-    proc = Process(target = BTHandler.BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, ConnectEvent, lock))
+    proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, ConnectEvent, lock))
     proc.start()
     switch = True                           ##hack for second obj, remove
 
@@ -75,6 +77,24 @@ def comms():
 
 if __name__ == '__main__':
     Serialise.setDirectory()
+
+    p = Parser()
+    # valid commands
+    p.parseInput("CG30")
+    p.parseInput("CD21")
+    p.parseInput("CRC1")
+    p.parseInput("CRE21")
+    p.parseInput("CRD2")
+    p.parseInput("RS3")
+    p.parseInput("RA")
+    # invalid commands
+    p.parseInput("F30")
+    p.parseInput("sgs")
+    p.parseInput("34tsd")
+    p.parseInput("CR3e")
+    # false positve commands
+    p.parseInput("RS3sdfwet")
+    p.parseInput("CRD23454336")
 
     running = True
     while running:
