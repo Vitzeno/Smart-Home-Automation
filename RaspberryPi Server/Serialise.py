@@ -9,7 +9,6 @@ def serialiseObjectToFile(object, filename, directory='config/'):
     f.write(jsonpickle.encode(object))
     f.close()
     
-
 def deserialiseObjectFromFile(filename, directory='config/'):
     f = open(filename, 'r')
     object = jsonpickle.decode(f.read())

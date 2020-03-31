@@ -1,4 +1,5 @@
 from multiprocessing import Process, Manager, Lock, Event
+from json import JSONEncoder
 import bluetooth
 import RPi.GPIO as GPIO
 import time
@@ -6,8 +7,6 @@ import subprocess
 import json
 import jsonpickle
 import os
-from json import JSONEncoder
-
 import Radio as Radio
 import BluetoothHandler as BTHandler
 import Devices as Devices
@@ -31,7 +30,6 @@ def comms():
     switch = True                           ##hack for second obj, remove
 
     print(subprocess.getoutput("hcitool con").split())
-    print("Waiting for connection")
 
     ConnectEvent.wait()
     conStatus = True
@@ -76,14 +74,7 @@ def comms():
     Radio.cleanUp()
 
 if __name__ == '__main__':
-
     Serialise.setDirectory()
-
-    device = Devices.Devices(1, "RGB Strip")
-    print(type(device))
-    Serialise.serialiseObjectToFile(device, 'devices.txt')
-    thawedDevice = Serialise.deserialiseObjectFromFile('devices.txt')
-    print(type(thawedDevice))
 
     running = True
     while running:

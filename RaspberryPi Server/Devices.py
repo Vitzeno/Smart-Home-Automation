@@ -7,6 +7,4 @@ class Devices(object):
     
     def toString(self):
         return "Name: " + self.name + " ID: " + str(self.id) + " State: " + str(self.lastKnownState)
-
-    def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__)
+        
