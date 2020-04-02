@@ -1,5 +1,6 @@
 package com.example.mohamed.arduinoprototype;
 
+import android.app.Application;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.IOException;
@@ -335,71 +337,32 @@ public class BTService extends Service {
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
 
-            beginListenForData();
         }
-        void beginListenForData()
-        {
-            stopWorker = false;
-            newByte = new byte[1024];
-            worker = new Thread(new Runnable()
-            {
-                public void run()
-                {
-                    Log.d("Worker", "Starting worker!");
-                    while(!Thread.currentThread().isInterrupted() && !stopWorker)
-                    {
-                        String incomingString = "Nothing yet";
-                        try
-                        {
-                            Log.d("WorkerStr", "String: " + incomingString);
-                            int bytesAvailable = mmInStream.available();
-                            if(bytesAvailable > 0)
-                            {
-                                byte[] packet = new byte[bytesAvailable];
-                                mmInStream.read(packet);
-                                Log.d("WorkerPkt", "Packet: " + packet);
-                                incomingString = new String(packet);
-                                Log.d("WorkerStr", "String: " + incomingString);
-
-                                Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_READ);
-                                Bundle bundle = new Bundle();
-                                bundle.putString(MainActivity.INCOMING_DATA, incomingString);
-                                msg.setData(bundle);
-                                mHandler.sendMessage(msg);
-                                Log.d("Worker", "Message sent by Handler");
-                            }
-                        }
-                        catch (IOException ex)
-                        {
-                            stopWorker = true;
-
-                            Log.d("Worker", "Error, Killing worker...");
-                        }
-                    }
-                    Log.d("Worker", "Done, Killing Worker...");
-                }
-            });
-
-            worker.start();
-
-        }
-
 
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
-            //String incomingString = "Nothing yet!";
+            String incomingString = "Nothing yet!";
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
                     // Read from the InputStream
                     //Log.d("D", "Trying to read data");
                     bytes = mmInStream.read(buffer);
-                    //Log.d("D", "data in bytes = " + bytes);
 
-                    //Log.d("incoming", "Data: " + incomingString + " " + mmInStream.toString());
-                    // Send the obtained data to the UI Activity
-                    //newData(incomingString);
+                    if(bytes != 0)
+                    {
+                        Log.d("incoming", "bytes: " + bytes);
+                        incomingString = new String(buffer, 0, bytes);
+                        Log.d("incoming", "Data: " + incomingString + " " + mmInStream.toString());
+
+                        Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_READ);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(MainActivity.INCOMING_DATA, incomingString);
+                        msg.setData(bundle);
+                        mHandler.sendMessage(msg);
+                    }
+                    
                 } catch (IOException e) {
                     connectionLost();
                     Log.d("D", "IOException, cannot pass to main activity");
