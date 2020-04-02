@@ -80,19 +80,19 @@ if __name__ == '__main__':
 
     p = Parser()
     # valid commands
-    p.parseInput("CG30")
-    p.parseInput("CD21")
-    p.parseInput("CRC1")
-    p.parseInput("CRE21")
-    p.parseInput("CRD2")
-    p.parseInput("RS3")
-    p.parseInput("RA")
+    p.parseInput("C:G:3:0")
+    p.parseInput("C:D:22:1")
+    p.parseInput("C:R:C:1")
+    p.parseInput("C:R:E:2:1")
+    p.parseInput("C:R:E:422:1")
+    p.parseInput("C:R:D:2")
+    p.parseInput("R:S:3")
+    p.parseInput("R:A:")
     # invalid commands
     p.parseInput("F30")
     p.parseInput("sgs")
     p.parseInput("34tsd")
     p.parseInput("CR3e")
-    # false positve commands
     p.parseInput("RS3sdfwet")
     p.parseInput("CRD23454336")
 

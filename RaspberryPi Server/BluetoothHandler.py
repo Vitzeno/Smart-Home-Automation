@@ -22,7 +22,6 @@ class BluetoothHandler:
         BluetoothHandler.Dict = Dict
         BluetoothHandler.ConnectEvent = ConnectEvent
 
-        #print("pre-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         # setup bt connection
         BluetoothHandler.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         BluetoothHandler.server_sock.bind(("", bluetooth.PORT_ANY))
@@ -44,8 +43,6 @@ class BluetoothHandler:
         BluetoothHandler.ConnectEvent.set()
         BluetoothHandler.Dict["name"] = BluetoothHandler.client_info[0]
 
-
-        #print("post-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         BluetoothHandler.startCommunication()
     
     @classmethod
@@ -71,6 +68,5 @@ class BluetoothHandler:
 
     @classmethod
     def cleanUpBT(cls):
-        #print("cleanUp CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         BluetoothHandler.client_sock.close()
         BluetoothHandler.server_sock.close()
