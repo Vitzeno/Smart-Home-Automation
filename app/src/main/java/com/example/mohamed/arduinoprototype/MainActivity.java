@@ -20,6 +20,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MESSAGE_TOAST = 5;
 
     public static final String DEVICE_NAME = "device_name";
+    public static final String INCOMING_DATA = "incoming_data";
     public static final String TOAST = "toast";
 
     private String mConnectedDeviceName = null;
@@ -184,12 +188,12 @@ public class MainActivity extends AppCompatActivity {
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
                 break;
-            case R.id.btnSOS:
+            /*case R.id.btnSOS:
                 outStringBuff.setLength(0);
                 outStringBuff.append('S');
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
-                break;
+                break;*/
             default:
                 throw new RuntimeException("Unknown button ID");
 
@@ -263,7 +267,9 @@ public class MainActivity extends AppCompatActivity {
 
                     break;
                 case MESSAGE_READ:
-
+                    TextView outBox = findViewById(R.id.Received);
+                    outBox.setText(msg.getData().getString(INCOMING_DATA));
+                    Log.d("d", msg.getData().getString(INCOMING_DATA));
                     break;
                 case MESSAGE_DEVICE_NAME:
 

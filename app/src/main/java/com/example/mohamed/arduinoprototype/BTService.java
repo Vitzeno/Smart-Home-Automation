@@ -154,6 +154,7 @@ public class BTService extends Service {
         r.write(out);
     }
 
+
     /**
      * Indicate that the connection attempt failed and notify the UI Activity.
      */
@@ -307,12 +308,18 @@ public class BTService extends Service {
 
 
     }
+
+    /** MOVE THIS UP IF THIS WORKS!!**/
+    volatile Boolean stopWorker;
+
     public class ConnectedThread extends Thread {
 
         private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
+        public final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
+        Thread worker;
+        byte[] newByte;
 
         public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
@@ -327,20 +334,72 @@ public class BTService extends Service {
             }
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
+
+            beginListenForData();
+        }
+        void beginListenForData()
+        {
+            stopWorker = false;
+            newByte = new byte[1024];
+            worker = new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    Log.d("Worker", "Starting worker!");
+                    while(!Thread.currentThread().isInterrupted() && !stopWorker)
+                    {
+                        String incomingString = "Nothing yet";
+                        try
+                        {
+                            Log.d("WorkerStr", "String: " + incomingString);
+                            int bytesAvailable = mmInStream.available();
+                            if(bytesAvailable > 0)
+                            {
+                                byte[] packet = new byte[bytesAvailable];
+                                mmInStream.read(packet);
+                                Log.d("WorkerPkt", "Packet: " + packet);
+                                incomingString = new String(packet);
+                                Log.d("WorkerStr", "String: " + incomingString);
+
+                                Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_READ);
+                                Bundle bundle = new Bundle();
+                                bundle.putString(MainActivity.INCOMING_DATA, incomingString);
+                                msg.setData(bundle);
+                                mHandler.sendMessage(msg);
+                                Log.d("Worker", "Message sent by Handler");
+                            }
+                        }
+                        catch (IOException ex)
+                        {
+                            stopWorker = true;
+
+                            Log.d("Worker", "Error, Killing worker...");
+                        }
+                    }
+                    Log.d("Worker", "Done, Killing Worker...");
+                }
+            });
+
+            worker.start();
+
         }
 
 
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
+            //String incomingString = "Nothing yet!";
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
                     // Read from the InputStream
+                    //Log.d("D", "Trying to read data");
                     bytes = mmInStream.read(buffer);
-                    // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+                    //Log.d("D", "data in bytes = " + bytes);
+
+                    //Log.d("incoming", "Data: " + incomingString + " " + mmInStream.toString());
+                    // Send the obtained data to the UI Activity
+                    //newData(incomingString);
                 } catch (IOException e) {
                     connectionLost();
                     Log.d("D", "IOException, cannot pass to main activity");
@@ -364,6 +423,7 @@ public class BTService extends Service {
         public void cancel() {
             try {
                 mmSocket.close();
+                stopWorker = true;      //Kill the worker thread started to read inputs
             } catch (IOException e) {
             }
         }
