@@ -83,27 +83,10 @@ def comms():
 if __name__ == '__main__':
     Serialise.setDirectory()
 
-    p = Parser()
-    # valid commands
-    p.parseInput("C:G:3:0")
-    p.parseInput("C:D:22:1")
-    p.parseInput("C:R:C:1")
-    p.parseInput("C:R:E:2:1")
-    p.parseInput("C:R:E:422:1")
-    p.parseInput("C:R:D:2")
-    p.parseInput("R:S:3")
-    p.parseInput("R:A:")
-    # invalid commands
-    p.parseInput("F30")
-    p.parseInput("sgs")
-    p.parseInput("34tsd")
-    p.parseInput("CR3e")
-    p.parseInput("RS3sdfwet")
-    p.parseInput("CRD23454336")
-
     s1 = Sensor(0, "Temp")
     s2 = Sensor(1, "Humid")
 
+    '''
     e1 = Expression(s1, 22)
     e2 = Expression(s2, 0)
 
@@ -114,6 +97,15 @@ if __name__ == '__main__':
     print( bool(e2.equalsTo()))
     print( bool(e2.greaterThan()))
     print( bool(e2.lessThan()))
+    '''
+
+    list1 = [Expression(s1, 22).equalsTo(), Expression(s2, 0).greaterThan(), "AND", Expression(s1, 12).equalsTo(), Expression(s2, 3).lessThan(), "OR", "OR"]
+    r1 = Rule(list1)
+    r1.evaluate(list1)
+
+    list2 = [Expression(s1, 22).equalsTo(), Expression(s2, 0).greaterThan(), "AND"]
+    r2 = Rule(list2)
+    r2.evaluate(list2)
 
     running = True
     while running:

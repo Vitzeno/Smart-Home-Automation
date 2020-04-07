@@ -32,7 +32,7 @@ class Parser:
         except (KeyError, ValueError) as e:
             print("Invalid rule")
 
-    ## Request all must end with a colon
+    ## Request ALL must end with a colon
     def handleRequest(self, request):
         try:
             index = request.index(":")
