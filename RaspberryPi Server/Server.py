@@ -13,6 +13,9 @@ import Serialise as Serialise
 from BluetoothHandler import BluetoothHandler
 from Devices import Devices
 from Parser import Parser
+from Expression import Expression
+from Rule import Rule
+from Sensor import Sensor
 
 running = []
 
@@ -97,6 +100,20 @@ if __name__ == '__main__':
     p.parseInput("CR3e")
     p.parseInput("RS3sdfwet")
     p.parseInput("CRD23454336")
+
+    s1 = Sensor(0, "Temp")
+    s2 = Sensor(1, "Humid")
+
+    e1 = Expression(s1, 22)
+    e2 = Expression(s2, 0)
+
+    print( bool(e1.equalsTo()))
+    print( bool(e1.greaterThan()))
+    print( bool(e1.lessThan()))
+
+    print( bool(e2.equalsTo()))
+    print( bool(e2.greaterThan()))
+    print( bool(e2.lessThan()))
 
     running = True
     while running:
