@@ -9,15 +9,17 @@ class BluetoothHandler:
 
     # Multiprocessing synchronisation
     MessageEvent = []
+    SendEvent = []
     EndEvent = []
     ConnectEvent = []
     Dict = []
     Lock = []
 
     @classmethod
-    def connectBT(cls, Dict, MessageEvent, EndEvent, ConnectEvent, lock):
+    def connectBT(cls, Dict, MessageEvent, EndEvent, ConnectEvent, SendEvent, lock):
         BluetoothHandler.Lock = lock
         BluetoothHandler.MessageEvent = MessageEvent
+        BluetoothHandler.SendEvent = SendEvent
         BluetoothHandler.EndEvent = EndEvent
         BluetoothHandler.Dict = Dict
         BluetoothHandler.ConnectEvent = ConnectEvent
@@ -52,8 +54,14 @@ class BluetoothHandler:
             try:
                 BluetoothHandler.Lock.acquire()
                 BluetoothHandler.Dict["recv"] = BluetoothHandler.client_sock.recv(1024)
+                
+                data = BluetoothHandler.Dict["recv"].decode("utf-8")
+                print("Data = ", data)
+                BluetoothHandler.sendToClient(data)
+
                 BluetoothHandler.MessageEvent.set()
                 BluetoothHandler.Lock.release()
+
 
                 if BluetoothHandler.EndEvent.is_set():
                     BluetoothHandler.cleanUpBT()
@@ -64,7 +72,11 @@ class BluetoothHandler:
                 BluetoothHandler.cleanUpBT()
                 BluetoothHandler.EndEvent.clear()
                 break
-                
+
+    @classmethod
+    def sendToClient(cls, message):
+        BluetoothHandler.client_sock.send(message)
+        print("Sending: ", message) 
 
     @classmethod
     def cleanUpBT(cls):

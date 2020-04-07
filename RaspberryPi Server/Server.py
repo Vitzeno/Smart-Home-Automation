@@ -20,14 +20,16 @@ def comms():
     Radio.setUp()
     dictionary = Manager().dict()
     dictionary["recv"] = []
+    dictionary["write"] = []
     dictionary["name"] = []
     dictionary["status"] = []
     lock = Lock()
     MessageEvent = Event()
+    SendEvent = Event()
     EndEvent = Event()
     ConnectEvent = Event()
   
-    proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, ConnectEvent, lock))
+    proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, ConnectEvent, SendEvent, lock))
     proc.start()
     switch = True                           ##hack for second obj, remove
 
