@@ -362,7 +362,7 @@ public class BTService extends Service {
                         msg.setData(bundle);
                         mHandler.sendMessage(msg);
                     }
-                    
+
                 } catch (IOException e) {
                     connectionLost();
                     Log.d("D", "IOException, cannot pass to main activity");
