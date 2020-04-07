@@ -1,4 +1,5 @@
 import bluetooth
+import subprocess
 
 class BluetoothHandler:
     # Bluetooth socket attributes
@@ -8,13 +9,21 @@ class BluetoothHandler:
 
     # Multiprocessing synchronisation
     MessageEvent = []
+    SendEvent = []
     EndEvent = []
+    ConnectEvent = []
     Dict = []
     Lock = []
 
     @classmethod
-    def connectBT(cls, Dict, MessageEvent, EndEvent, lock):
-        #print("pre-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
+    def connectBT(cls, Dict, MessageEvent, EndEvent, ConnectEvent, SendEvent, lock):
+        BluetoothHandler.Lock = lock
+        BluetoothHandler.MessageEvent = MessageEvent
+        BluetoothHandler.SendEvent = SendEvent
+        BluetoothHandler.EndEvent = EndEvent
+        BluetoothHandler.Dict = Dict
+        BluetoothHandler.ConnectEvent = ConnectEvent
+
         # setup bt connection
         BluetoothHandler.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         BluetoothHandler.server_sock.bind(("", bluetooth.PORT_ANY))
@@ -33,36 +42,43 @@ class BluetoothHandler:
         print("Waiting for connection on RFCOMM channel", port)
         BluetoothHandler.client_sock, BluetoothHandler.client_info = BluetoothHandler.server_sock.accept()
         print("Accepted connection from", BluetoothHandler.client_info)
+        BluetoothHandler.ConnectEvent.set()
+        BluetoothHandler.Dict["name"] = BluetoothHandler.client_info[0]
 
-        BluetoothHandler.Lock = lock
-        BluetoothHandler.MessageEvent = MessageEvent
-        BluetoothHandler.EndEvent = EndEvent
-        BluetoothHandler.Dict = Dict
-
-        #print("post-connectBT CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         BluetoothHandler.startCommunication()
     
     @classmethod
     def startCommunication(cls):
+        print("Communination Running...")
         while True:
             try:
                 BluetoothHandler.Lock.acquire()
                 BluetoothHandler.Dict["recv"] = BluetoothHandler.client_sock.recv(1024)
+                
+                data = BluetoothHandler.Dict["recv"].decode("utf-8")
+                print("Data = ", data)
+                BluetoothHandler.sendToClient(data)
+
                 BluetoothHandler.MessageEvent.set()
                 BluetoothHandler.Lock.release()
+
 
                 if BluetoothHandler.EndEvent.is_set():
                     BluetoothHandler.cleanUpBT()
                     BluetoothHandler.EndEvent.clear()
                     break
+                    
             except (OSError, KeyboardInterrupt) as e:
                 BluetoothHandler.cleanUpBT()
                 BluetoothHandler.EndEvent.clear()
                 break
-                
+
+    @classmethod
+    def sendToClient(cls, message):
+        BluetoothHandler.client_sock.send(message)
+        print("Sending: ", message) 
 
     @classmethod
     def cleanUpBT(cls):
-        #print("cleanUp CS: ", BluetoothHandler.client_sock, " SS: ", BluetoothHandler.server_sock)
         BluetoothHandler.client_sock.close()
         BluetoothHandler.server_sock.close()
