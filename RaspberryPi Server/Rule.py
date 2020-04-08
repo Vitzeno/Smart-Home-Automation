@@ -1,46 +1,62 @@
 from Expression import Expression
 
 class Rule:
+    '''
+    Evaluate a given rule, grammar for rule defined below:
 
-    def __init__ (self, expressions, evaluated = []):
-        self.expressions = expressions
-        self.evaluated = []
-    
+        Rule    => Expr Expr BinOp | Expr
+        Expr    => Expr | Expr UnPo | Expr Expr BinOp | Expr Digit BinOp
+        Digit   => [0-9]+
+        BinOp   => > | < | = | AND | OR
+        UnOp    => NOT
+    '''
     def evaluate(self, expressions = []):
         evaluated = []
-
-        print("Expressions: {0}" .format(expressions))
-        print("Expressions len: {0}" .format(len(expressions)))
         print()
+        print("Start: {0}" .format(expressions))
+        i = self.getFirstOccurance(expressions)
+
+        #Base case of recursive function
+        if len(expressions) <= 3:
+            if expressions[i] == "AND":
+                print("RETURN: {0}" .format(self.evaluateAnd(expressions[i - 1], expressions[i - 2])))
+                return self.evaluateAnd(expressions[i - 1], expressions[i - 2])
+            elif expressions[i] == "OR":
+                print("RETURN: {0}" .format(self.evaluateOr(expressions[i - 1], expressions[i - 2])))
+                return self.evaluateOr(expressions[i - 1], expressions[i - 2])
+            elif expressions[i] == "NOT":
+                print("RETURN: {0}" .format(self.evaluateNot(expressions[i])))
+                return self.evaluateNot(expressions[i])
+            else:
+                print("Invalid operator")
+                return None
+        elif expressions[i] == "AND":
+            newExpression = self.evaluateAnd(expressions[i - 1], expressions[i - 2])
+            print("Evaluating: {0}, {1} AND to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
+            del expressions[i - 2:i + 1]
+            expressions.insert(i - 2, newExpression)
+            print("Passing: {0}" .format(expressions))
+        elif expressions[i] == "OR":
+            newExpression = self.evaluateOr(expressions[i - 1], expressions[i - 2])
+            print("Evaluating: {0}, {1} OR to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
+            del expressions[i - 2 :i + 1]
+            expressions.insert(i - 2, newExpression)
+            print("Passing: {0}" .format(expressions))  
+        else:
+            print("Invalid operator")
+            return None
+
+        return self.evaluate(expressions)
+    
+    '''
+    Returns the index of the first occurance of a str
+    '''
+    def getFirstOccurance(self, expressions):
         for i in range(len(expressions)):
-            if len(expressions) == 3:
-                #print("Less than 3")
-                if isinstance(expressions[i], str):
-                    if expressions[i] == "AND":
-                        print("Return {0}" .format(self.evaluateAnd(expressions[i - 1], expressions[i - 2])))
-                        return self.evaluateAnd(expressions[i - 1], expressions[i - 2])
-                    elif expressions[i] == "OR":
-                        print("Return {0}" .format(self.evaluateOr(expressions[i - 1], expressions[i - 2])))
-                        return self.evaluateOr(expressions[i - 1], expressions[i - 2])
-            elif isinstance(expressions[i], str):
-                if i == len(expressions) - 1 :
-                    evaluated.append(expressions[-1])
-                elif expressions[i] == "AND":
-                    newExpression = self.evaluateAnd(expressions[i - 1], expressions[i - 2])
-                    print("Evaluating: {0}, {1} AND" .format(expressions[i - 1], expressions[i - 2]))
-                    print("Inserting: {0}"  .format(newExpression))
-                    evaluated.append(newExpression)
-                elif expressions[i] == "OR":
-                    newExpression = self.evaluateOr(expressions[i - 1], expressions[i - 2])
-                    print("Evaluating: {0}, {1} OR" .format(expressions[i - 1], expressions[i - 2]))
-                    print("Inserting: {0}"  .format(newExpression))
-                    evaluated.append(newExpression)
-
-        print("Evaluated: {0}" .format(evaluated))
-        print("Evaluated len: {0}" .format(len(evaluated)))
-        print()
-        return self.evaluate(evaluated)
-            
+            if isinstance(expressions[i], str):
+                return i
+        return 0
+       
     def evaluateAnd(self, expressionOne, expressionTwo):
         if expressionOne and expressionTwo:
             return True
@@ -50,3 +66,6 @@ class Rule:
         if expressionOne or expressionTwo:
             return True
         return False
+
+    def evaluateNot(self, expressionOne):
+        return not expressionOne

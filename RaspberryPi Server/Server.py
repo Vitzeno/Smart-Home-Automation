@@ -86,25 +86,12 @@ if __name__ == '__main__':
     s1 = Sensor(0, "Temp")
     s2 = Sensor(1, "Humid")
 
-    '''
-    e1 = Expression(s1, 22)
-    e2 = Expression(s2, 0)
-
-    print( bool(e1.equalsTo()))
-    print( bool(e1.greaterThan()))
-    print( bool(e1.lessThan()))
-
-    print( bool(e2.equalsTo()))
-    print( bool(e2.greaterThan()))
-    print( bool(e2.lessThan()))
-    '''
-
-    list1 = [Expression(s1, 22).equalsTo(), Expression(s2, 0).greaterThan(), "AND", Expression(s1, 12).equalsTo(), Expression(s2, 3).lessThan(), "OR", "OR"]
-    r1 = Rule(list1)
+    list1 = [Expression().equalsTo(s1, 12), Expression().greaterThan(s2, 0), "AND", Expression().equalsTo(s1, 12), Expression().lessThan(s2, 3), "OR", Expression().equalsTo(s1, 12), Expression().lessThan(s2, 3), "OR", "OR", "AND"]
+    r1 = Rule()
     r1.evaluate(list1)
 
-    list2 = [Expression(s1, 22).equalsTo(), Expression(s2, 0).greaterThan(), "AND"]
-    r2 = Rule(list2)
+    list2 = [Expression().equalsTo(s1, 22), Expression().greaterThan(s2, 0), "AND"]
+    r2 = Rule()
     r2.evaluate(list2)
 
     running = True
