@@ -1,3 +1,7 @@
+from Expression import Expression
+from Rule import Rule
+from Sensor import Sensor
+
 class Parser:
 
     def parseInput(self, input):
@@ -25,7 +29,7 @@ class Parser:
         try:
             index = rule.index(":")
             switch = {
-                'C': lambda rule : print("Create rule " + rule[-1]),
+                'C': lambda rule : self.createRule(rule),
                 'E': lambda rule : print("Replace rule with ID " + rule[:rule.index(":")] + " with new rule " + rule[-1]),
                 'D': lambda rule : print("Delete rule with ID " + rule[-1])
             }[rule[:index]](rule[index + 1:])
@@ -43,6 +47,45 @@ class Parser:
         except (KeyError, ValueError) as e:
             print("Invalid request")
 
+    '''
+    Fix so that actual sensor objects are passed in instead of stand in
+    '''
+    def createRule(self, rule):
+        ruleList = []
+        s1 = Sensor(0, "Temp")
+        s2 = Sensor(1, "Humid")
+
+        list = rule.split(":")
+        print("Passed in {0}" .format(list))
+        index = self.getFirstBinOperator(list)
+        print(index)
+
+        if (list[index] == "GE"):
+            ruleList.append(Expression().greaterThan(s1, int(list[index - 1])))
+            print("{0} greater than {1}" .format(list[index - 2], list[index - 1]))
+        elif (list[index] == "LE"):
+            ruleList.append(Expression().lessThan(s2, int(list[index - 1])))
+            print("{0} less than {1}" .format(list[index - 2], list[index - 1]))
+        elif (list[index] == "EQ"):
+            ruleList.append(Expression().equalsTo(s1, int(list[index - 1])))
+            print("{0} equals to {1}" .format(list[index - 2], list[index - 1]))
+        elif (list[index] == "AND"):
+            ruleList.append("AND")
+        elif (list[index] == "OR"):
+            ruleList.append("OR")
+        else:
+            print("Invalid binary operator")
+        
+        print("Created rule {0}" .format(ruleList))
+    
+    def getFirstBinOperator(self, list):
+        index = list.index("GE")
+        index = list.index("LE") if list.index("LE") < index else index
+        index = list.index("EQ") if list.index("LE") < index else index
+        index = list.index("AND") if list.index("AND") < index else index
+        index = list.index("OR") if list.index("OR") < index else index
+
+        return index
 
 ## Update protocol to allow rules to be entered
 ## Stop naively getting the last digit when setting state

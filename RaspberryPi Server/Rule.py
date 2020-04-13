@@ -1,6 +1,6 @@
 from Expression import Expression
 
-class Rule:
+class Rule(object):
     '''
     Evaluate a given rule, grammar for rule defined below:
 
@@ -67,5 +67,8 @@ class Rule:
             return True
         return False
 
+    '''
+    Update this method to function with the new evaluation rules
+    '''
     def evaluateNot(self, expressionOne):
         return not expressionOne
