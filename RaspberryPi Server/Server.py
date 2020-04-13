@@ -16,11 +16,11 @@ from Parser import Parser
 from Expression import Expression
 from Rule import Rule
 from Sensor import Sensor
+from Group import Group
 
 running = []
 
 def comms():
-    Radio.setUp()
     dictionary = Manager().dict()
     dictionary["recv"] = []
     dictionary["write"] = []
@@ -81,8 +81,10 @@ def comms():
     Radio.cleanUp()
 
 if __name__ == '__main__':
+    Radio.setUp()
     Serialise.setDirectory()
 
+    '''
     s1 = Sensor(0, "Temp")
     s2 = Sensor(1, "Humid")
 
@@ -93,6 +95,30 @@ if __name__ == '__main__':
     list2 = [Expression().equalsTo(s1, 22), Expression().greaterThan(s2, 0), "AND"]
     r2 = Rule()
     r2.evaluate(list2)
+    '''
+    '''
+    group1 = Group()
+    group2 = Group()
+
+    d1 = Devices(1, "Computer")
+    d2 = Devices(2, "Light Bulb")
+    d3 = Devices(3, "Fridge")
+    d4 = Devices(4, "RGB Strip")
+
+    group1.addDevice(d1)
+    group1.addDevice(d2)
+    group2.addDevice(d3)
+    group2.addDevice(d4)
+
+    group1.printAll()
+    group2.printAll()
+
+    Serialise.serialiseObjectToFile(group1, "Groups.txt")
+    '''
+
+    group1 = Serialise.deserialiseObjectFromFile("Groups")
+    group1.printAll()
+    group1.switchAll(True)
 
     running = True
     while running:
