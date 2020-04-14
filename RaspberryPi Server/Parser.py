@@ -44,6 +44,14 @@ class Parser:
 
     '''
     Fix so that actual sensor objects are passed in instead of stand in
+
+    Constructs with grammar defined below from the parsed string/list provided
+
+        Rule    => Expr Expr BinOp | Expr
+        Expr    => Expr | Expr UnPo | Expr Expr BinOp | Expr Digit BinOp
+        Digit   => [0-9]+
+        BinOp   => > | < | = | AND | OR
+        UnOp    => NOT
     '''
     def createRule(self, rule):
         s1 = Sensor(0, "Temp")
