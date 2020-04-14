@@ -72,3 +72,6 @@ class Rule(object):
     '''
     def evaluateNot(self, expressionOne):
         return not expressionOne
+    
+
+    # Update rule evaluation to handle singular expressions

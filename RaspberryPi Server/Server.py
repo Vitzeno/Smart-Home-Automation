@@ -104,7 +104,11 @@ if __name__ == '__main__':
     p = Parser()
     # valid commands
     p.parseInput("C:R:C:S1:21:GE:S2:12:LE:AND")
+    p.parseInput("C:R:C:S1:21:GE")
+    p.parseInput("C:R:C:S1:21:LE")
+    p.parseInput("C:R:C:S1:0:EQ:S2:12:LE:OR")
 
+    
     running = True
     while running:
         comms()
