@@ -12,11 +12,14 @@ import Radio as Radio
 import Serialise as Serialise
 from BluetoothHandler import BluetoothHandler
 from Devices import Devices
+from DeviceList import DeviceList
 from Parser import Parser
 from Expression import Expression
 from Rule import Rule
 from Sensor import Sensor
+from SensorList import SensorList
 from Group import Group
+from GroupList import GroupList
 
 running = []
 
@@ -100,6 +103,31 @@ if __name__ == '__main__':
     group1.printAll()
     group1.switchAll(True)
     '''
+    sL = SensorList()
+    dL = DeviceList()
+    gL = GroupList()
+
+    d1 = Devices(1, "Lamp")
+    d2 = Devices(2, "Washer")
+    d3 = Devices(3, "TV")
+    d4 = Devices(4, "Computer")
+
+    g1 = Group("Group 2")
+    g1.addDevice(d1)
+    g1.addDevice(d2)
+
+    g2 = Group("Group 2")
+    g2.addDevice(d3)
+    g2.addDevice(d4)
+
+    gL.addGroup(g1)
+    gL.addGroup(g2)
+
+    dL.addDevice(d1)
+    dL.addDevice(d2)
+
+    Serialise.serialiseObjectToFile(dL, "DeviceList")
+    Serialise.serialiseObjectToFile(gL, "GroupList")
 
     p = Parser()
     # valid commands

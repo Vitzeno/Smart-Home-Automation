@@ -1,6 +1,8 @@
 from Devices import Devices
 
 class Group(object):
+
+    devices = []
     
     def __init__(self, name, devices = []):
         self.devices = devices

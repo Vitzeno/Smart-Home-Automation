@@ -3,6 +3,7 @@ from Rule import Rule
 from Sensor import Sensor
 from Group import Group
 from Devices import Devices
+from DeviceList import DeviceList
 import Serialise as Serialise
 
 class Parser:
