@@ -2,7 +2,7 @@ from Devices import Devices
 
 class Group(object):
     
-    def __init__(self, devices = []):
+    def __init__(self, name, devices = []):
         self.devices = devices
     
     def addDevice(self, device):

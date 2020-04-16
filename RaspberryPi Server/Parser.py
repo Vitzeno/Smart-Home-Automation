@@ -1,6 +1,9 @@
 from Expression import Expression
 from Rule import Rule
 from Sensor import Sensor
+from Group import Group
+from Devices import Devices
+import Serialise as Serialise
 
 class Parser:
 
@@ -17,13 +20,31 @@ class Parser:
 
     def handleCommand(self, command):
         if(command[0] == "D"):
-            print("Switch device {0}" .format(command[1:]))
+            self.handleDevices(command[1:])
         elif(command[0] == "G"):
-            print("Switch group {0}" .format(command[1:]))
+            self.handleGroups(command[1:])
         elif(command[0] == "R"):
             self.handleRule(command[1:])
         else:
             print("Invalid command")
+
+    def handleDevices(self, device):
+        if(device[0] == "E"):
+            print("Edit deivice {0}" .format(device[1:]))
+        elif(device[0] == "S"):
+            print("Switch deivice {0}" .format(device[1:]))
+        else:
+            print("Invalid device command")
+
+    def handleGroups(self, group):
+        if(group[0] == "C"):
+            print("Create group {0} with devices {1}" .format(group[1], group[2:]))
+        elif(group[0] == "D"):
+            print("Delete group {0}" .format(group[1]))
+        elif(group[0] == "S"):
+            print("Switch group {0} " .format(group[1:]))
+        else:
+            print("Invalid group command")
 
     def handleRule(self, rule):
         if(rule[0] == "C"):
