@@ -102,7 +102,7 @@ if __name__ == '__main__':
     group1 = Serialise.deserialiseObjectFromFile("Groups")
     group1.printAll()
     group1.switchAll(True)
-    '''
+    
     sL = SensorList()
     dL = DeviceList()
     gL = GroupList()
@@ -136,6 +136,15 @@ if __name__ == '__main__':
     p.parseInput("C:D:E:2:Test")
     p.parseInput("C:D:S:2:1")
     p.parseInput("C:G:S:3:0")
+    '''
+    deviceList = DeviceList().getDevicesObject()
+    print(deviceList.toStringFormat())
+
+    d1 = Devices(6, "Test Device")
+
+    deviceList.addDevice(d1)
+    deviceList.setDevicesObject()
+
     
     running = True
     while running:

@@ -1,4 +1,5 @@
 from Group import Group
+import Serialise as Serialise
 
 def Singleton(cls):
     instances = {}
@@ -12,6 +13,9 @@ def Singleton(cls):
 class GroupList(object):
 
     groupList = []
+    FILE_DIR = "config/"
+    FILE_TYPE = ".txt"
+    FILE_NAME = "GroupList"
 
     def __init__(self, groups = []):
         print("Init Singleton Group List Object")
