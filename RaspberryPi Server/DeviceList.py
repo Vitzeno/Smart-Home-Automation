@@ -20,26 +20,23 @@ class DeviceList(object):
     def __init__(self, devices = []):
         print("Init Singleton Device List Object")
         self.devicesList = devices
+        self.counter = 0
     
-    def addDevice(self, device):
+    def addDevice(self, name):
+        self.counter += 1
+        device = Devices(self.counter, name)
         self.devicesList.append(device)
-
-    def addDevices(self, devices):
-        self.devicesList.extend(devices)
 
     '''
     Since the constructor cannot be called agiain in a singleton, this method sets up the default
     '''
     def setUpDefaultData(self):
         print("Add default data to object")
-        d1 = Devices(1, "Device One")
-        d2 = Devices(2, "Device Two")
-        d3 = Devices(3, "Device Three")
-        d4 = Devices(4, "Device Four")
-        self.addDevice(d1)
-        self.addDevice(d2)
-        self.addDevice(d3)
-        self.addDevice(d4)
+        self.addDevice("Device One")
+        self.addDevice("Device Twp")
+        self.addDevice("Device Three")
+        self.addDevice("Device Four")
+        self.counter = 4
 
     '''
     Init the device list JSON file and write to disk, default parameters are used
@@ -54,6 +51,8 @@ class DeviceList(object):
     
     '''
     Read device list from disk, if it does not exist call init to create one with default parameters
+
+    Use this method to access the devices list object
     '''
     def getDevicesObject(self):
         try:

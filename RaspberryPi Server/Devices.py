@@ -11,5 +11,5 @@ class Devices(object):
         Radio.switchSocket(self.id, state)
     
     def toStringFormat(self):
-        return "Name: " + self.name + " ID: " + str(self.id) + " State: " + str(self.lastKnownState)
+        return "Name: " + str(self.name) + " ID: " + str(self.id) + " State: " + str(self.lastKnownState)
         

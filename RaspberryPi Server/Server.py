@@ -140,9 +140,7 @@ if __name__ == '__main__':
     deviceList = DeviceList().getDevicesObject()
     print(deviceList.toStringFormat())
 
-    d1 = Devices(6, "Test Device")
-
-    deviceList.addDevice(d1)
+    deviceList.addDevice("New device")
     deviceList.setDevicesObject()
 
     
