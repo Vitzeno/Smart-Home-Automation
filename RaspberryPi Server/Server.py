@@ -15,7 +15,8 @@ from Devices import Devices
 from DeviceList import DeviceList
 from Parser import Parser
 from Expression import Expression
-from Rule import Rule
+from RuleEvaluator import RuleEvaluator
+from RuleList import RuleList
 from Sensor import Sensor
 from SensorList import SensorList
 from Group import Group
@@ -87,61 +88,37 @@ if __name__ == '__main__':
     Radio.setUp()
     Serialise.setDirectory()
 
-    '''
-    s1 = Sensor(0, "Temp")
-    s2 = Sensor(1, "Humid")
-
-    list1 = [Expression().equalsTo(s1, 12), Expression().greaterThan(s2, 0), "AND", Expression().equalsTo(s1, 12), Expression().lessThan(s2, 3), "OR", Expression().equalsTo(s1, 12), Expression().lessThan(s2, 3), "OR", "OR", "AND"]
-    r1 = Rule()
-    r1.evaluate(list1)
-
-    list2 = [Expression().equalsTo(s1, 22), Expression().greaterThan(s2, 0), "AND"]
-    r2 = Rule()
-    r2.evaluate(list2)
-
-    group1 = Serialise.deserialiseObjectFromFile("Groups")
-    group1.printAll()
-    group1.switchAll(True)
-    
-    sL = SensorList()
-    dL = DeviceList()
-    gL = GroupList()
-
-    d1 = Devices(1, "Lamp")
-    d2 = Devices(2, "Washer")
-    d3 = Devices(3, "TV")
-    d4 = Devices(4, "Computer")
-
-    g1 = Group("Group 2")
-    g1.addDevice(d1)
-    g1.addDevice(d2)
-
-    g2 = Group("Group 2")
-    g2.addDevice(d3)
-    g2.addDevice(d4)
-
-    gL.addGroup(g1)
-    gL.addGroup(g2)
-
-    dL.addDevice(d1)
-    dL.addDevice(d2)
-
-    Serialise.serialiseObjectToFile(dL, "DeviceList")
-    Serialise.serialiseObjectToFile(gL, "GroupList")
-
-    p = Parser()
-    # valid commands
-    p.parseInput("C:G:C:Group 1:3:2:1")
-    p.parseInput("C:G:D:Group 1")
-    p.parseInput("C:D:E:2:Test")
-    p.parseInput("C:D:S:2:1")
-    p.parseInput("C:G:S:3:0")
-    '''
     deviceList = DeviceList().getDevicesObject()
     print(deviceList.toStringFormat())
 
-    deviceList.addDevice("New device")
-    deviceList.setDevicesObject()
+    groupList = GroupList().getGroupObject()
+    print(groupList.toStringFormat())
+
+    sensorList = SensorList().getSensorObject()
+    print(sensorList.toStringFormat())
+    
+    ruleList = RuleList().getRuleObject()
+    print(ruleList.toStringFormat())
+
+    s1 = sensorList.getSensorByID(1)
+    s2 = sensorList.getSensorByID(2)
+    #ruleList.createRule("New Rule", [Expression().equalsTo(s1, 22), Expression().greaterThan(s2, 0), "AND"])
+    #ruleList.setRuleObject()
+
+    try:
+        print(groupList.getGroupByID(4).toStringFormat())
+    except (ValueError) as e:
+        print(e)
+    
+    try:
+        print(sensorList.getSensorByID(2).toStringFormat())
+    except (ValueError) as e:
+        print(e)
+    
+    try:
+        print(ruleList.getRuleByID(3).toStringFormat())
+    except (ValueError) as e:
+        print(e)
 
     
     running = True

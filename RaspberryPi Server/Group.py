@@ -4,7 +4,9 @@ class Group(object):
 
     devices = []
     
-    def __init__(self, name, devices = []):
+    def __init__(self, id, name, devices = []):
+        self.id = id
+        self.name = name
         self.devices = devices
     
     def addDevice(self, device):
@@ -16,7 +18,10 @@ class Group(object):
     def switchAll(self, state):
         for device in self.devices:
             device.switchDevice(state)
+    
+    def toStringFormat(self):
+        return "Name: " + str(self.name) + " ID: " + str(self.id) + " Devices: " + str(self.devices)
         
-    def printAll(self):
+    def printAllDevices(self):
         for device in self.devices:
             print(device.toString())

@@ -1,5 +1,7 @@
+from RuleEvaluator import RuleEvaluator
+from Rule import Rule
+from Expression import Expression
 import Serialise as Serialise
-from Devices import Devices
 
 def Singleton(cls):
     instances = {}
@@ -10,39 +12,37 @@ def Singleton(cls):
     return getinstance
 
 @Singleton
-class DeviceList(object):
+class RuleList(object):
 
-    devicesList = []
+    ruleList = []
     FILE_DIR = "config/"
     FILE_TYPE = ".txt"
-    FILE_NAME = "DeviceList"
+    FILE_NAME = "RuleList"
 
-    def __init__(self, devices = []):
-        print("Init Singleton Device List Object")
-        self.devicesList = devices
+    def __init__(self, rules = []):
+        print("Init Singleton Rule List Object")
+        self.ruleList = rules
         self.counter = 0
     
-    def addDevice(self, name):
+    def createRule(self, name, rule):
         self.counter += 1
-        device = Devices(self.counter, name)
-        self.devicesList.append(device)
-
+        rule = Rule(self.counter, name, rule)
+        self.ruleList.append(rule)
+    
     '''
     Since the constructor cannot be called agiain in a singleton, this method sets up the default
     '''
     def setUpDefaultData(self):
         print("Add default data to object")
-        self.addDevice("Device One")
-        self.addDevice("Device Twp")
-        self.addDevice("Device Three")
-        self.addDevice("Device Four")
-        self.counter = 4
+        self.createRule("Rule One", [])
+        self.createRule("Rule Two", [])
+        self.counter = 2
 
     '''
-    Init the device list JSON file and write to disk, default parameters are used
+    Init the rule list JSON file and write to disk, default parameters are used
     '''
-    def initDeviceList(self):
-        print("Init devices list and write to file")
+    def initRuleList(self):
+        print("Init rule list and write to file")
         try:
             self.setUpDefaultData()
             Serialise.serialiseObjectToFile(self, self.FILE_NAME, self.FILE_DIR)
@@ -54,28 +54,42 @@ class DeviceList(object):
 
     Use this method to access the devices list object
     '''
-    def getDevicesObject(self):
+    def getRuleObject(self):
         try:
-            dlObject = Serialise.deserialiseObjectFromFile(self.FILE_NAME, self.FILE_DIR)
+            rlObject = Serialise.deserialiseObjectFromFile(self.FILE_NAME, self.FILE_DIR)
         except (IOError, OSError, FileNotFoundError) as e:
             print("File {0} not found, init default data" .format(self.FILE_NAME))
-            self.initDeviceList()
+            self.initRuleList()
         
-        dlObject = Serialise.deserialiseObjectFromFile(self.FILE_NAME, self.FILE_DIR)
-        return dlObject
+        rlObject = Serialise.deserialiseObjectFromFile(self.FILE_NAME, self.FILE_DIR)
+        return rlObject
 
     '''
     Write object to file
     '''
-    def setDevicesObject(self):
+    def setRuleObject(self):
         try:
             Serialise.serialiseObjectToFile(self, self.FILE_NAME, self.FILE_DIR)
         except (IOError, OSError, FileNotFoundError) as e:
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
+    '''
+    Prints out rule data in string format
+    '''
     def toStringFormat(self):
-        for i in self.devicesList:
+        for i in self.ruleList:
             print(i.toStringFormat())
-            
 
+    '''
+    Search for a rule object by ID, possible that ID and list index are the same
 
+    If it fails it will raise a ValueError exception
+    '''
+    def getRuleByID(self, id):
+        if int(id) > int(self.counter):
+            raise ValueError("ID not in range")
+        for rule in self.ruleList:
+            if int(rule.id) == int(id):
+                return rule
+        
+        raise ValueError("ID not found in list")
