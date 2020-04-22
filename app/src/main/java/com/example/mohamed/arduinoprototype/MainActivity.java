@@ -306,5 +306,17 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstance)
+    {
+        super.onSaveInstanceState(savedInstance);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstance)
+    {
+        super.onRestoreInstanceState(savedInstance);
+    }
+
 }
 
