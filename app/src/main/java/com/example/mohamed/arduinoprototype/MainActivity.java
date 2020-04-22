@@ -291,10 +291,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
-                Log.d("aaaa", "Device found");
+
+                listOfDevices.clear();              //clear the existing lists
+                pairedDevices = null;
+                deviceNames.clear();
+                macAddresses.clear();
+                pairedDevices = bluetoothAdapter.getBondedDevices();
+                // First check if there are any already paired devices
+                if (pairedDevices.size() > 0) {
+                    // There are paired devices. Get the name and address of each paired device.
+                    for (BluetoothDevice device : pairedDevices) {
+                        deviceNames.add(device.getName());
+                        macAddresses.add(device.getAddress());
+
+                        listOfDevices.put(device.getName(), device.getAddress());
+                        
+                    }
+                }
+
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device.getName() != null) {
                     deviceNames.add(device.getName());
