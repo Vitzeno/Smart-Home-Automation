@@ -34,22 +34,27 @@ class SensorList(object):
 
     '''    
     Since the constructor cannot be called agiain in a singleton, this method sets up the default
+
+    This method requires a connection to the emonHub server to function, must wrap in try catch block
     '''
     def setUpDefaultData(self):
         print("Add default sensor data to object")
-        sensors = self.requestAllData()
-        
-        i = 0
-        for sensor in sensors:
-            data = sensors[sensor]
-            self.addSensor(sensor, data[0], data[1], data[2])
-            print("Adding sensor ", sensor)
-            i +=1
+        try:
+            sensors = self.requestAllData()
             
-        self.counter = i
+            i = 0
+            for sensor in sensors:
+                data = sensors[sensor]
+                self.addSensor(sensor, data[0], data[1], data[2])
+                print("Adding sensor ", sensor)
+                i +=1
+                
+            self.counter = i
+        except (IOError, OSError, FileNotFoundError) as e:
+            self.addSensor("sensor")
 
 
-        '''
+    '''
     Init the sensor list JSON file and write to disk, default parameters are used
     '''
     def initSensorList(self):

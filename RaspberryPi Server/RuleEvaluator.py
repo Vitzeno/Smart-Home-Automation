@@ -12,38 +12,43 @@ class RuleEvaluator(object):
     '''
     def evaluate(self, expressions = []):
         evaluated = []
-        print()
-        print("Start: {0}" .format(expressions))
+        #print()
+        #print("Start: {0}" .format(expressions))
         i = self.getFirstOccurance(expressions)
 
-        #Base case of recursive function
+        # Handle singular expressions
+        if len(expressions) == 1:
+            #print("RETURN: {0}" .format(expressions[0]))
+            return expressions[0]
+
+        # Base case of recursive function
         if len(expressions) <= 3:
             if expressions[i] == "AND":
-                print("RETURN: {0}" .format(self.evaluateAnd(expressions[i - 1], expressions[i - 2])))
+                #print("RETURN: {0}" .format(self.evaluateAnd(expressions[i - 1], expressions[i - 2])))
                 return self.evaluateAnd(expressions[i - 1], expressions[i - 2])
             elif expressions[i] == "OR":
-                print("RETURN: {0}" .format(self.evaluateOr(expressions[i - 1], expressions[i - 2])))
+                #print("RETURN: {0}" .format(self.evaluateOr(expressions[i - 1], expressions[i - 2])))
                 return self.evaluateOr(expressions[i - 1], expressions[i - 2])
             elif expressions[i] == "NOT":
-                print("RETURN: {0}" .format(self.evaluateNot(expressions[i])))
+                #print("RETURN: {0}" .format(self.evaluateNot(expressions[i])))
                 return self.evaluateNot(expressions[i])
             else:
-                print("Invalid operator")
+                #print("Invalid operator")
                 return None
         elif expressions[i] == "AND":
             newExpression = self.evaluateAnd(expressions[i - 1], expressions[i - 2])
-            print("Evaluating: {0}, {1} AND to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
+            #print("Evaluating: {0}, {1} AND to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
             del expressions[i - 2:i + 1]
             expressions.insert(i - 2, newExpression)
-            print("Passing: {0}" .format(expressions))
+            #print("Passing: {0}" .format(expressions))
         elif expressions[i] == "OR":
             newExpression = self.evaluateOr(expressions[i - 1], expressions[i - 2])
-            print("Evaluating: {0}, {1} OR to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
+            #print("Evaluating: {0}, {1} OR to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
             del expressions[i - 2 :i + 1]
             expressions.insert(i - 2, newExpression)
-            print("Passing: {0}" .format(expressions))  
+            #print("Passing: {0}" .format(expressions))  
         else:
-            print("Invalid operator")
+            #print("Invalid operator")
             return None
 
         return self.evaluate(expressions)

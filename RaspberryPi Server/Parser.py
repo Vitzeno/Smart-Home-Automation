@@ -7,6 +7,7 @@ from GroupList import GroupList
 from Devices import Devices
 from DeviceList import DeviceList
 import Serialise as Serialise
+from ParserException import ParserException
 
 class Parser:
 
@@ -19,7 +20,7 @@ class Parser:
         elif(list[0] == "R"):
             self.handleRequest(list[1:])
         else:
-            print("Invalid input")
+            raise ParserException("Invalid input")
 
     def handleCommand(self, command):
         if(command[0] == "D"):
@@ -29,7 +30,7 @@ class Parser:
         elif(command[0] == "R"):
             self.handleRule(command[1:])
         else:
-            print("Invalid command")
+            raise ParserException("Invalid command")
 
     def handleDevices(self, device):
         if(device[0] == "E"):
@@ -37,7 +38,7 @@ class Parser:
         elif(device[0] == "S"):
             print("Switch deivice {0}" .format(device[1:]))
         else:
-            print("Invalid device command")
+            raise ParserException("Invalid device command")
 
     def handleGroups(self, group):
         if(group[0] == "C"):
@@ -47,7 +48,7 @@ class Parser:
         elif(group[0] == "S"):
             print("Switch group {0} " .format(group[1:]))
         else:
-            print("Invalid group command")
+            raise ParserException("Invalid group command")
 
     def handleRule(self, rule):
         if(rule[0] == "C"):
@@ -56,7 +57,7 @@ class Parser:
         elif(rule[0] == "D"):
             print("Delete rule {0}" .format(rule[1:]))
         else:
-            print("Invalid rule")
+            raise ParserException("Invalid rule")
 
     def handleRequest(self, request):
         if(request[0] == "S"):
@@ -64,7 +65,7 @@ class Parser:
         elif(request[0] == "A"):
             print("Request all sensor data {0}" .format(request[1:]))
         else:
-            print("Invalid request")
+            raise ParserException("Invalid request")
 
     '''
     Fix so that actual sensor objects are passed in instead of stand in
@@ -92,7 +93,7 @@ class Parser:
             elif (rule[index] == "OR"):
                 self.ruleList.append("OR")
             else:
-                print("Invalid binary operator")
+                raise ParserException("Invalid binary operator")
         elif (rule[index] == "GE"):
             self.ruleList.append(Expression().greaterThan(s1, int(rule[index - 1])))
             print("{0} greater than {1}" .format(rule[index - 2], rule[index - 1]))
@@ -117,7 +118,7 @@ class Parser:
             if len(rule[index + 1:]) > 0:
                 self.createRule(rule[index + 1:])
         else:
-            print("Invalid binary operator")
+            raise ParserException("Invalid binary operator")
         
         print("Created rule {0}" .format(self.ruleList))
     
