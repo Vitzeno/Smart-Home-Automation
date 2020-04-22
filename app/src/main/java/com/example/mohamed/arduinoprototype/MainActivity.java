@@ -1,6 +1,13 @@
 package com.example.mohamed.arduinoprototype;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -14,12 +21,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.navigation.NavigationView;
 
 import org.w3c.dom.Text;
 
@@ -28,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -42,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TOAST = "toast";
 
     private String mConnectedDeviceName = null;
+    private DrawerLayout drawer;
 
 
     public StringBuffer outStringBuff = new StringBuffer("");
@@ -49,28 +60,38 @@ public class MainActivity extends AppCompatActivity {
     private BTService BTservice;
 
     // Bluetooth adaptor to use
-    BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     // List of previously paired devices, pairing is required before connecting
-    Set<BluetoothDevice> pairedDevices;
+    public Set<BluetoothDevice> pairedDevices;
     // Bluetooth request code
     int REQUEST_ENABLE_BT = 1;
 
     // The list view of bluetooth devices
-    ListView lstView;
-    ArrayAdapter<String> arrayAdapter;
-    ArrayList<String> deviceNames = new ArrayList<>();
-    ArrayList<String> macAddresses = new ArrayList<>();
+    public ListView lstView;
+    public ArrayAdapter<String> arrayAdapter;
+    public ArrayList<String> deviceNames = new ArrayList<>();
+    public ArrayList<String> macAddresses = new ArrayList<>();
 
-    HashMap<String, String> listOfDevices = new HashMap<String, String>();
+    public HashMap<String, String> listOfDevices = new HashMap<String, String>();
 
-
-
+    public FragmentManager fm = getSupportFragmentManager();
+    public BluetoothFragment btfm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.Toolbar);
+        setSupportActionBar(toolbar);
+        drawer = findViewById(R.id.drawer_layout);
+        NavigationView navView = findViewById(R.id.nav_view);
+        navView.setNavigationItemSelectedListener(this);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-
+        btfm = (BluetoothFragment) fm.findFragmentByTag("BTFrag");
+        if(btfm == null)
+            Log.d("aaaa", "FUCK");
 
         // Check if device supports bluetooth
         if (bluetoothAdapter == null) {
@@ -94,11 +115,40 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(receiver, filter);
 
+        //btfm.populateListView(deviceNames);
         populateListView();
-        setUpListner();
+        //setUpListner();
 
         BTservice = new BTService(this, mHandler);
         BTservice.start();
+
+        if(savedInstanceState == null)
+        {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BluetoothFragment(), "BTFrag").addToBackStack(null).commit();
+            navView.setCheckedItem(R.id.nav_bluetooth);
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Log.d("aaaa", "Nav Stuff " + menuItem.getItemId());
+        switch (menuItem.getItemId())
+        {
+            case R.id.nav_sensor:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SensorFragment(), "SenFrag").addToBackStack(null).commit();
+                break;
+            case R.id.nav_device:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new DeviceFragment(), "DevFrag").addToBackStack(null).commit();
+                break;
+            case R.id.nav_rule:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RuleFragment(), "RulFrag").addToBackStack(null).commit();
+                break;
+            case R.id.nav_bluetooth:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BluetoothFragment(), "BTFrag").addToBackStack(null).commit();
+                break;
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     /**
@@ -127,13 +177,24 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "No Paired Bluetooth Devices Found.", Toast.LENGTH_LONG).show();
         }
 
+        //btfm.populateListView(deviceNames);
         populateListView();
     }
 
     public void populateListView() {
-        lstView = (ListView) findViewById(R.id.lstDevices);
+        //lstView = (ListView) findViewById(R.id.lstDevices);
         arrayAdapter = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, deviceNames);
-        lstView.setAdapter(arrayAdapter);
+        arrayAdapter.notifyDataSetChanged();
+
+        btfm = (BluetoothFragment) fm.findFragmentByTag("BTFrag");
+
+        Log.d("aaaa", "populate");
+        if(btfm != null) {
+            btfm.updateList();
+            Log.d("aaaa", "Update sent");
+        }
+        Log.d("aaaa", "fm = " + fm.getFragments());
+        //btfm.lstView.setAdapter(arrayAdapter);
     }
 
     /**
@@ -150,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView deviceName = (TextView) view.findViewById(R.id.txtName);
                 String deviceNameString = deviceName.getText().toString();
                 String deviceAddressString = listOfDevices.get(deviceNameString);
-                Toast.makeText(getApplicationContext(), "" + deviceNameString + " : " + deviceAddressString , Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "" + deviceNameString + " : " + deviceAddressString, Toast.LENGTH_LONG).show();
 
 
                 String MAC_ADDR = deviceAddressString;
@@ -162,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This method handles button clicks
+     *
      * @param v
      */
     public void onClickButton(View v) {
@@ -173,11 +235,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 bluetoothAdapter.startDiscovery();
                 Toast.makeText(getApplicationContext(), "Scanning for bluetooth devices", Toast.LENGTH_LONG).show();
+
+                btfm = (BluetoothFragment) fm.findFragmentByTag("BTFrag");
+                Log.d("aaaa", "aa: " + btfm);
                 break;
             case R.id.btnOn:
                 outStringBuff.setLength(0);
                 outStringBuff.append('H');
-                 send = outStringBuff.toString().getBytes();
+                send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
 
                 break;
@@ -229,8 +294,9 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
+                Log.d("aaaa", "Device found");
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(device.getName() != null) {
+                if (device.getName() != null) {
                     deviceNames.add(device.getName());
                     macAddresses.add(device.getAddress());
 
@@ -239,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
                     //Toast.makeText(getApplicationContext(), "Found: " + device.getName(), Toast.LENGTH_LONG).show();
                 }
 
+                //btfm.populateListView(deviceNames);
                 populateListView();
 
                 //Log.d("BT Discovery", deviceNames + " " + macAddresses);
@@ -255,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void onResume(){
+    public void onResume() {
         super.onResume();
     }
 
@@ -307,15 +374,26 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstance)
-    {
+    public void onSaveInstanceState(Bundle savedInstance) {
         super.onSaveInstanceState(savedInstance);
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstance)
-    {
+    public void onRestoreInstanceState(Bundle savedInstance) {
         super.onRestoreInstanceState(savedInstance);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if(drawer.isDrawerOpen(GravityCompat.START))
+        {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        else
+        {
+            super.onBackPressed();
+        }
     }
 
 }
