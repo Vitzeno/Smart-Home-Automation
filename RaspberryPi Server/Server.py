@@ -122,10 +122,14 @@ if __name__ == '__main__':
 
     p = Parser()
     # valid commands
-    p.parseInput("C:R:C:S1:21:GE:S2:12:LE:AND")
-    p.parseInput("C:R:C:S1:21:GE")
-    p.parseInput("C:R:C:S1:21:LE")
-    p.parseInput("C:R:C:S1:0:EQ:S2:12:LE:OR")
+    p.parseInput("R:S:2")
+    p.parseInput("R:R:4")
+    p.parseInput("R:D:7")
+    p.parseInput("R:G:6")
+    p.parseInput("R:AS")
+    p.parseInput("R:AR")
+    p.parseInput("R:AD")
+    p.parseInput("R:AG")
 
     
     running = True

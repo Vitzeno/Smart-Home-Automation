@@ -64,8 +64,20 @@ class Parser:
     def handleRequest(self, request):
         if(request[0] == "S"):
             print("Request sensor {0}" .format(request[1:]))
-        elif(request[0] == "A"):
+        elif(request[0] == "AS"):
             print("Request all sensor data {0}" .format(request[1:]))
+        elif(request[0] == "D"):
+            print("Request device {0}" .format(request[1:]))
+        elif(request[0] == "AD"):
+            print("Request all device data {0}" .format(request[1:]))
+        elif(request[0] == "R"):
+            print("Request sensor {0}" .format(request[1:]))
+        elif(request[0] == "AR"):
+            print("Request all rule data {0}" .format(request[1:]))
+        elif(request[0] == "G"):
+            print("Request group {0}" .format(request[1:]))
+        elif(request[0] == "AG"):
+            print("Request all group data {0}" .format(request[1:]))
         else:
             raise ParserException("Invalid request")
 
