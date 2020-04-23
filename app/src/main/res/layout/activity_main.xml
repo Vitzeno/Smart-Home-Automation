@@ -28,8 +28,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/_dynamic"
-        app:layout_constraintVertical_bias="0.496" />
+        app:layout_constraintTop_toBottomOf="@+id/Received" />
 
     <ListView
         android:id="@+id/lstDevices"
@@ -76,14 +75,23 @@
         app:layout_constraintEnd_toStartOf="@+id/btnScan"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/btnSOS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp"
-        android:onClick="onClickButton"
-        android:text="SOS"
-        app:layout_constraintBottom_toTopOf="@+id/btnScan"
+    <TextView
+        android:id="@+id/txtBTStatus"
+        android:layout_width="26dp"
+        android:layout_height="15dp"
+        android:background="#FF0000"
+        app:layout_constraintBottom_toTopOf="@+id/lstDevices"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/txtTitle"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/Received"
+        android:layout_width="182dp"
+        android:layout_height="28dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lstDevices" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

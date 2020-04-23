@@ -7,25 +7,36 @@ import subprocess
 import json
 import jsonpickle
 import os
+
 import Radio as Radio
-import BluetoothHandler as BTHandler
-import Devices as Devices
 import Serialise as Serialise
+from BluetoothHandler import BluetoothHandler
+from Devices import Devices
+from DeviceList import DeviceList
+from Parser import Parser
+from Expression import Expression
+from RuleEvaluator import RuleEvaluator
+from RuleList import RuleList
+from Sensor import Sensor
+from SensorList import SensorList
+from Group import Group
+from GroupList import GroupList
 
 running = []
 
 def comms():
-    Radio.setUp()
     dictionary = Manager().dict()
     dictionary["recv"] = []
+    dictionary["write"] = []
     dictionary["name"] = []
     dictionary["status"] = []
     lock = Lock()
     MessageEvent = Event()
+    SendEvent = Event()
     EndEvent = Event()
     ConnectEvent = Event()
   
-    proc = Process(target = BTHandler.BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, ConnectEvent, lock))
+    proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, ConnectEvent, SendEvent, lock))
     proc.start()
     switch = True                           ##hack for second obj, remove
 
@@ -74,8 +85,53 @@ def comms():
     Radio.cleanUp()
 
 if __name__ == '__main__':
+    Radio.setUp()
     Serialise.setDirectory()
 
+    deviceList = DeviceList().getDevicesObject()
+    print(deviceList.toStringFormat())
+
+    groupList = GroupList().getGroupObject()
+    print(groupList.toStringFormat())
+
+    sensorList = SensorList().getSensorObject()
+    print(sensorList.toStringFormat())
+    
+    ruleList = RuleList().getRuleObject()
+    print(ruleList.toStringFormat())
+
+    s1 = sensorList.getSensorByID(1)
+    s2 = sensorList.getSensorByID(2)
+    #ruleList.createRule("New Rule", [Expression().equalsTo(s1, 22), Expression().greaterThan(s2, 0), "AND"])
+    #ruleList.setRuleObject()
+
+    try:
+        print(groupList.getGroupByID(4).toStringFormat())
+    except (ValueError) as e:
+        print(e)
+    
+    try:
+        print(sensorList.getSensorByID(2).toStringFormat())
+    except (ValueError) as e:
+        print(e)
+    
+    try:
+        print(ruleList.getRuleByID(3).toStringFormat())
+    except (ValueError) as e:
+        print(e)
+
+    p = Parser()
+    # valid commands
+    p.parseInput("R:S:2")
+    p.parseInput("R:R:4")
+    p.parseInput("R:D:7")
+    p.parseInput("R:G:6")
+    p.parseInput("R:AS")
+    p.parseInput("R:AR")
+    p.parseInput("R:AD")
+    p.parseInput("R:AG")
+
+    
     running = True
     while running:
         comms()

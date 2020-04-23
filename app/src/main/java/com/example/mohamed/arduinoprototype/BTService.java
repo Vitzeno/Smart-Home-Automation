@@ -1,5 +1,6 @@
 package com.example.mohamed.arduinoprototype;
 
+import android.app.Application;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.IOException;
@@ -42,6 +44,7 @@ public class BTService extends Service {
         mState = STATE_NONE;
         mHandler = handler;
     }
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -152,6 +155,7 @@ public class BTService extends Service {
         // Perform the write unsynchronized
         r.write(out);
     }
+
 
     /**
      * Indicate that the connection attempt failed and notify the UI Activity.
@@ -306,12 +310,18 @@ public class BTService extends Service {
 
 
     }
+
+    /** MOVE THIS UP IF THIS WORKS!!**/
+    volatile Boolean stopWorker;
+
     public class ConnectedThread extends Thread {
 
         private final BluetoothSocket mmSocket;
-        private final InputStream mmInStream;
+        public final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
+        Thread worker;
+        byte[] newByte;
 
         public ConnectedThread(BluetoothSocket socket) {
             mmSocket = socket;
@@ -326,20 +336,33 @@ public class BTService extends Service {
             }
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
-        }
 
+        }
 
         public void run() {
             byte[] buffer = new byte[1024];
             int bytes;
+            String incomingString = "Nothing yet!";
             // Keep listening to the InputStream while connected
             while (true) {
                 try {
                     // Read from the InputStream
+                    //Log.d("D", "Trying to read data");
                     bytes = mmInStream.read(buffer);
-                    // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+
+                    if(bytes != 0)
+                    {
+                        Log.d("incoming", "bytes: " + bytes);
+                        incomingString = new String(buffer, 0, bytes);
+                        Log.d("incoming", "Data: " + incomingString + " " + mmInStream.toString());
+
+                        Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_READ);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(MainActivity.INCOMING_DATA, incomingString);
+                        msg.setData(bundle);
+                        mHandler.sendMessage(msg);
+                    }
+
                 } catch (IOException e) {
                     connectionLost();
                     Log.d("D", "IOException, cannot pass to main activity");
@@ -363,6 +386,7 @@ public class BTService extends Service {
         public void cancel() {
             try {
                 mmSocket.close();
+                stopWorker = true;      //Kill the worker thread started to read inputs
             } catch (IOException e) {
             }
         }

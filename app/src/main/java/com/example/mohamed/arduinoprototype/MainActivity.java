@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +20,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MESSAGE_TOAST = 5;
 
     public static final String DEVICE_NAME = "device_name";
+    public static final String INCOMING_DATA = "incoming_data";
     public static final String TOAST = "toast";
 
     private String mConnectedDeviceName = null;
@@ -183,12 +188,12 @@ public class MainActivity extends AppCompatActivity {
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
                 break;
-            case R.id.btnSOS:
+            /*case R.id.btnSOS:
                 outStringBuff.setLength(0);
                 outStringBuff.append('S');
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
-                break;
+                break;*/
             default:
                 throw new RuntimeException("Unknown button ID");
 
@@ -262,7 +267,9 @@ public class MainActivity extends AppCompatActivity {
 
                     break;
                 case MESSAGE_READ:
-
+                    TextView outBox = findViewById(R.id.Received);
+                    outBox.setText(msg.getData().getString(INCOMING_DATA));
+                    Log.d("d", msg.getData().getString(INCOMING_DATA));
                     break;
                 case MESSAGE_DEVICE_NAME:
 
@@ -273,6 +280,28 @@ public class MainActivity extends AppCompatActivity {
                 case MESSAGE_TOAST:
 
                     break;
+                case MESSAGE_STATE_CHANGE:
+                    switch (msg.arg1) {
+                        case BTService.STATE_NONE:
+                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.BLACK);
+                            Log.d("Status", "BT None");
+                            break;
+                        case BTService.STATE_LISTEN:
+                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.RED);
+                            Log.d("Status", "BT listening");
+                            break;
+                        case BTService.STATE_CONNECTING:
+                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.YELLOW);
+                            Log.d("Status", "BT Connecting");
+                            break;
+                        case BTService.STATE_CONNECTED:
+                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.GREEN);
+                            Log.d("Status", "BT Connected");
+                            break;
+                        default:
+                            Log.d("Status", "Error, no status recognised");
+                            break;
+                    }
             }
         }
     };
