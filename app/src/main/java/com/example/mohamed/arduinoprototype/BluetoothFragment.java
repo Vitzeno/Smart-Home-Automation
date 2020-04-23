@@ -1,5 +1,6 @@
 package com.example.mohamed.arduinoprototype;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.os.Bundle;
@@ -47,8 +48,10 @@ public class BluetoothFragment extends Fragment
         arrayAdapter = ((MainActivity)getActivity()).arrayAdapter;
 
         populateListView();
+        setUpListner();
     }
-    public void populateListView() {
+
+    private void populateListView() {
         arrayAdapter = ((MainActivity)getActivity()).arrayAdapter;
         lstView.setAdapter(arrayAdapter);
     }
@@ -56,10 +59,15 @@ public class BluetoothFragment extends Fragment
     public void updateList()
     {
         Log.d("aaaa", "updating");
+        devices = ((MainActivity)getActivity()).deviceNames;
+        listOfDevices = ((MainActivity)getActivity()).listOfDevices;
         arrayAdapter.notifyDataSetChanged();
         populateListView();
     }
 
+    /**
+     * This method sets up a listener on the list view
+     */
     public void setUpListner() {
 
         //lstView = (ListView) findViewById(R.id.lstDevices);
@@ -71,12 +79,12 @@ public class BluetoothFragment extends Fragment
                 TextView deviceName = (TextView) view.findViewById(R.id.txtName);
                 String deviceNameString = deviceName.getText().toString();
                 String deviceAddressString = listOfDevices.get(deviceNameString);
-                //Toast.makeText(getApplicationContext(), "" + deviceNameString + " : " + deviceAddressString, Toast.LENGTH_LONG).show();
+                Toast.makeText(getView().getContext(), "" + deviceNameString + " : " + deviceAddressString, Toast.LENGTH_LONG).show();
 
 
                 String MAC_ADDR = deviceAddressString;
-                //BluetoothDevice device = bluetoothAdapter.getRemoteDevice(MAC_ADDR);
-                //BTservice.connect(device);
+                BluetoothDevice device = ((MainActivity)getActivity()).bluetoothAdapter.getRemoteDevice(MAC_ADDR);
+                ((MainActivity)getActivity()).BTservice.connect(device);
             }
         });
     }

@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public StringBuffer outStringBuff = new StringBuffer("");
 
-    private BTService BTservice;
+    public BTService BTservice;
 
     // Bluetooth adaptor to use
     public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public FragmentManager fm = getSupportFragmentManager();
     public BluetoothFragment btfm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -197,30 +198,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //btfm.lstView.setAdapter(arrayAdapter);
     }
 
-    /**
-     * This method sets up a listener on the list view
-     */
-    public void setUpListner() {
-
-        lstView = (ListView) findViewById(R.id.lstDevices);
-        lstView.setClickable(true);
-        lstView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-                TextView deviceName = (TextView) view.findViewById(R.id.txtName);
-                String deviceNameString = deviceName.getText().toString();
-                String deviceAddressString = listOfDevices.get(deviceNameString);
-                Toast.makeText(getApplicationContext(), "" + deviceNameString + " : " + deviceAddressString, Toast.LENGTH_LONG).show();
 
 
-                String MAC_ADDR = deviceAddressString;
-                BluetoothDevice device = bluetoothAdapter.getRemoteDevice(MAC_ADDR);
-                BTservice.connect(device);
+    private void clearBTList(){
+        listOfDevices.clear();              //clear the existing lists
+        pairedDevices = null;
+        deviceNames.clear();
+        macAddresses.clear();
+        pairedDevices = bluetoothAdapter.getBondedDevices();
+        // Then check if there are any already paired devices and add them to the List
+        if (pairedDevices.size() > 0) {
+            // There are paired devices. Get the name and address of each paired device.
+            for (BluetoothDevice device : pairedDevices) {
+                deviceNames.add(device.getName());
+                macAddresses.add(device.getAddress());
+
+                listOfDevices.put(device.getName(), device.getAddress());
+
             }
-        });
+        }
     }
-
     /**
      * This method handles button clicks
      *
@@ -233,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (bluetoothAdapter.isDiscovering()) {
                     bluetoothAdapter.cancelDiscovery();
                 }
+                clearBTList();
                 bluetoothAdapter.startDiscovery();
                 Toast.makeText(getApplicationContext(), "Scanning for bluetooth devices", Toast.LENGTH_LONG).show();
 
@@ -295,23 +293,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
-
-                listOfDevices.clear();              //clear the existing lists
-                pairedDevices = null;
-                deviceNames.clear();
-                macAddresses.clear();
-                pairedDevices = bluetoothAdapter.getBondedDevices();
-                // First check if there are any already paired devices
-                if (pairedDevices.size() > 0) {
-                    // There are paired devices. Get the name and address of each paired device.
-                    for (BluetoothDevice device : pairedDevices) {
-                        deviceNames.add(device.getName());
-                        macAddresses.add(device.getAddress());
-
-                        listOfDevices.put(device.getName(), device.getAddress());
-                        
-                    }
-                }
 
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device.getName() != null) {
