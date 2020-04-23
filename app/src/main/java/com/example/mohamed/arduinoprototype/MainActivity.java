@@ -269,6 +269,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    public void onClickAddRuleFragOp(View v)
+    {
+        AddRuleFragment ad = (AddRuleFragment) fm.findFragmentByTag("AddRule");
+        ad.onClickOp(v);
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check is bluetooth request was granted
