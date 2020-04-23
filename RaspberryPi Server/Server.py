@@ -14,6 +14,7 @@ from BluetoothHandler import BluetoothHandler
 from Devices import Devices
 from DeviceList import DeviceList
 from Parser import Parser
+from ParserException import ParserException
 from Expression import Expression
 from RuleEvaluator import RuleEvaluator
 from RuleList import RuleList
@@ -122,6 +123,7 @@ if __name__ == '__main__':
 
     p = Parser()
     # valid commands
+
     p.parseInput("R:S:2")
     p.parseInput("R:R:4")
     p.parseInput("R:D:7")
@@ -130,6 +132,21 @@ if __name__ == '__main__':
     p.parseInput("R:AR")
     p.parseInput("R:AD")
     p.parseInput("R:AG")
+
+    try:
+        p.parseInput("C:R:C:f:OR:e:AND:EQ:LE")
+    except (ParserException) as e:
+        print(e)
+        
+    try:
+        p.parseInput("C:R:C:21:GE:LE:AND")
+    except (ParserException) as e:
+        print(e)
+
+    try:
+        p.parseInput("C:R:C:21::GE:LE:AND")
+    except (ParserException) as e:
+        print(e)
 
     
     running = True

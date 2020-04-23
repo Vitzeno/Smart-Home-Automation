@@ -99,40 +99,42 @@ class Parser:
         print("Passing in rule list {0}" .format(rule))
         index = self.getFirstBinOperator(rule)
         print("Operator {0} at index: {1}" .format(rule[index], index))
-
-        # Handling base case of recursive function
-        if len(rule) == 1:
-            if (rule[index] == "AND"):
+        try:
+            # Handling base case of recursive function
+            if len(rule) == 1:
+                if (rule[index] == "AND"):
+                    self.ruleList.append("AND")
+                elif (rule[index] == "OR"):
+                    self.ruleList.append("OR")
+                else:
+                    raise ParserException("Invalid binary operator")
+            elif (rule[index] == "GE"):
+                self.ruleList.append(Expression().greaterThan(s1, int(rule[index - 1])))
+                print("{0} greater than {1}" .format(rule[index - 2], rule[index - 1]))
+                if len(rule[index + 1:]) > 0:
+                    self.createRule(rule[index + 1:])
+            elif (rule[index] == "LE"):
+                self.ruleList.append(Expression().lessThan(s2, int(rule[index - 1])))
+                print("{0} less than {1}" .format(rule[index - 2], rule[index - 1]))
+                if len(rule[index + 1:]) > 0:
+                    self.createRule(rule[index + 1:])
+            elif (rule[index] == "EQ"):
+                self.ruleList.append(Expression().equalsTo(s1, int(rule[index - 1])))
+                print("{0} equals to {1}" .format(rule[index - 2], rule[index - 1]))
+                if len(rule[index + 1:]) > 0:
+                    self.createRule(rule[index + 1:])
+            elif (rule[index] == "AND"):
                 self.ruleList.append("AND")
+                if len(rule[index + 1:]) > 0:
+                    self.createRule(rule[index + 1:])
             elif (rule[index] == "OR"):
                 self.ruleList.append("OR")
+                if len(rule[index + 1:]) > 0:
+                    self.createRule(rule[index + 1:])
             else:
                 raise ParserException("Invalid binary operator")
-        elif (rule[index] == "GE"):
-            self.ruleList.append(Expression().greaterThan(s1, int(rule[index - 1])))
-            print("{0} greater than {1}" .format(rule[index - 2], rule[index - 1]))
-            if len(rule[index + 1:]) > 0:
-                self.createRule(rule[index + 1:])
-        elif (rule[index] == "LE"):
-            self.ruleList.append(Expression().lessThan(s2, int(rule[index - 1])))
-            print("{0} less than {1}" .format(rule[index - 2], rule[index - 1]))
-            if len(rule[index + 1:]) > 0:
-                self.createRule(rule[index + 1:])
-        elif (rule[index] == "EQ"):
-            self.ruleList.append(Expression().equalsTo(s1, int(rule[index - 1])))
-            print("{0} equals to {1}" .format(rule[index - 2], rule[index - 1]))
-            if len(rule[index + 1:]) > 0:
-                self.createRule(rule[index + 1:])
-        elif (rule[index] == "AND"):
-            self.ruleList.append("AND")
-            if len(rule[index + 1:]) > 0:
-                self.createRule(rule[index + 1:])
-        elif (rule[index] == "OR"):
-            self.ruleList.append("OR")
-            if len(rule[index + 1:]) > 0:
-                self.createRule(rule[index + 1:])
-        else:
-            raise ParserException("Invalid binary operator")
+        except (ValueError) as e:
+            raise ParserException("Syntax validation failed")
         
         print("Created rule {0}" .format(self.ruleList))
         print("Mobile Formatted rule {0}" .format(self.input))

@@ -50,6 +50,13 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParserException, self.p.parseInput, "C:R:2")
         self.assertRaises(ParserException, self.p.parseInput, "C:R:0:EQ:S2:12:LE:OR")
 
+    def test_invalid_syntax(self):
+        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C:f:OR:e:AND:EQ:LE")
+        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C:21:GE:LE:AND")
+        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C:21::GE:LE:AND")
+        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C:ORAND:EQ:LE")
+        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C::OR:")
+
     def test_invalid_request(self):
         pass
 
