@@ -16,4 +16,9 @@ public class SensorFragment extends Fragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_sensor, container, false);
     }
+    @Override
+    public void onResume(){
+        super.onResume();
+        ((MainActivity)getActivity()).navView.setCheckedItem(R.id.nav_sensor);
+    }
 }

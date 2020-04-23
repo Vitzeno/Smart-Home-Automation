@@ -50,7 +50,11 @@ public class BluetoothFragment extends Fragment
         populateListView();
         setUpListner();
     }
-
+    @Override
+    public void onResume(){
+        super.onResume();
+        ((MainActivity)getActivity()).navView.setCheckedItem(R.id.nav_bluetooth);
+    }
     private void populateListView() {
         arrayAdapter = ((MainActivity)getActivity()).arrayAdapter;
         lstView.setAdapter(arrayAdapter);

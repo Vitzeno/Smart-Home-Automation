@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private String mConnectedDeviceName = null;
     private DrawerLayout drawer;
-
+    public NavigationView navView;
 
     public StringBuffer outStringBuff = new StringBuffer("");
 
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.Toolbar);
         setSupportActionBar(toolbar);
         drawer = findViewById(R.id.drawer_layout);
-        NavigationView navView = findViewById(R.id.nav_view);
+        navView = findViewById(R.id.nav_view);
         navView.setNavigationItemSelectedListener(this);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -251,6 +251,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
                 break;
+
+            case R.id.NewRule:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddRuleFragment(), "AddRule").addToBackStack(null).commit();
+                break;
+
             /*case R.id.btnSOS:
                 outStringBuff.setLength(0);
                 outStringBuff.append('S');
