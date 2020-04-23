@@ -12,17 +12,25 @@ To allow for end user programming a simple context free grammar (CFG) was first 
 ### Grammar for parser
 
 Rule => Expr Expr BinOp | Expr
+
 Expr => Expr | Expr UnOp | Expr Expr BinOp | Expr Digit BinOp
+
 Digit => [0-9]+
+
 BinOp => GE | LE | EQ | AND | OR
+
 UnOp => NOT
 
 ### Grammar for rule evaluator
 
 Rule => Expr Expr BinOp | Expr
+
 Expr => Expr | Expr UnOp | Expr Expr BinOp | Expr Digit BinOp
+
 Digit => [0-9]+
+
 BinOp => > | < | = | AND | OR
+
 UnOp => NOT
 
 ## Mobile Application
