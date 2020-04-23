@@ -12,8 +12,10 @@ from ParserException import ParserException
 class Parser:
 
     ruleList = []
+    input = []
 
     def parseInput(self, input):
+        self.input = input
         list = input.split(":")
         if(list[0] == "C"):
             self.handleCommand(list[1:])
@@ -121,6 +123,7 @@ class Parser:
             raise ParserException("Invalid binary operator")
         
         print("Created rule {0}" .format(self.ruleList))
+        print("Mobile Formatted rule {0}" .format(self.input))
     
     
     '''
