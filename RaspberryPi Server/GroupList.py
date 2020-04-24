@@ -24,6 +24,9 @@ class GroupList(object):
     
     '''
     Creates a group of devices and auto increments ID
+
+    name: group name
+    deivces: devices list
     '''
     def createGroup(self, name, devices):
         self.counter += 1
@@ -56,6 +59,8 @@ class GroupList(object):
     Read device list from disk, if it does not exist call init to create one with default parameters
 
     Use this method to access the devices list object
+
+    return: deserialised object or newly created deivce list object
     '''
     def getGroupObject(self):
         try:
@@ -77,7 +82,9 @@ class GroupList(object):
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
     '''
-    Prints out group data in string format
+    Converts object to string
+
+    return: string format of object
     '''
     def toStringFormat(self):
         allGroups = ""

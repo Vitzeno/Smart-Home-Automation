@@ -14,6 +14,10 @@ class Parser:
 
     input = []
 
+
+    '''
+    First step in the parsing process, parses input or raises a ParserException
+    '''
     def parseInput(self, input):
         self.input = input
         list = input.split(":")
@@ -23,7 +27,10 @@ class Parser:
             return self.handleRequest(list[1:])
         else:
             raise ParserException("Invalid input")
-
+    
+    '''
+    Parses command or raises a ParserException
+    '''
     def handleCommand(self, command):
         if(command[0] == "D"):
             self.handleDevices(command[1:])
@@ -33,7 +40,10 @@ class Parser:
             self.handleRule(command[1:])
         else:
             raise ParserException("Invalid command")
-
+    
+    '''
+    Handles devices or raises a ParserException
+    '''
     def handleDevices(self, device):
         if(device[0] == "E"):
             print("Edit deivice {0}" .format(device[1:]))
@@ -41,7 +51,10 @@ class Parser:
             print("Switch deivice {0}" .format(device[1:]))
         else:
             raise ParserException("Invalid device command")
-
+    
+    '''
+    Handles group or raises a ParserException
+    '''     
     def handleGroups(self, group):
         if(group[0] == "C"):
             print("Create group {0} with devices {1}" .format(group[1], group[2:]))
@@ -52,6 +65,9 @@ class Parser:
         else:
             raise ParserException("Invalid group command")
 
+    '''
+    Handles rule or raises a ParserException
+    '''
     def handleRule(self, rule):
         if(rule[0] == "C"):
             self.ruleList = []
@@ -61,7 +77,10 @@ class Parser:
             print("Delete rule {0}" .format(rule[1:]))
         else:
             raise ParserException("Invalid rule")
-
+    
+    '''
+    Parses reques or raises a ParserException
+    '''
     def handleRequest(self, request):
         ruleList = RuleList().getRuleObject()
 

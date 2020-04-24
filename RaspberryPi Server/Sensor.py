@@ -8,6 +8,10 @@ class Sensor(Devices):
         self.humidity = humidity
         super().__init__(id, name)
     
- 
+    '''
+    Converts object to string
+
+    return: string representaion of object
+    '''
     def toStringFormat(self):
         return "Name: " + str(self.name) + " ID: " + str(self.id) + " Temp: " + str(self.temperature) + " Time: " + str(self.time)

@@ -26,6 +26,14 @@ class SensorList(object):
         self.sensorList = sensors
         self.counter = 0
 
+    '''
+    Adds a new senor to sensor list
+
+    name: sensor name
+    time: current time
+    temperature: current temperature
+    humidity: current humidity
+    '''
     def addSensor(self, name, time = 0, temperature = 0, humidity = 0):
         print("Adding new sensor! ", name)
         self.counter += 1
@@ -69,6 +77,8 @@ class SensorList(object):
     Read sensor list from disk, if it does not exist call init to create one with default parameters
 
     Use this method to access the sensor list object
+
+    return: deserialised object or newly created deivce list object
     '''
     def getSensorObject(self):
         try:
@@ -90,6 +100,11 @@ class SensorList(object):
         except (IOError, OSError, FileNotFoundError) as e:
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
+    '''
+    Converts object to string
+
+    return: string format of object
+    '''
     def toStringFormat(self):
         allSensors = ""
         for i in self.sensorList:
@@ -110,7 +125,9 @@ class SensorList(object):
         
         raise ValueError("ID not found in list")
             
-
+    '''
+    Uses a get request to return a dictionrry contaning sensor data from emonHub service
+    '''
     def requestAllData(self):
         with requests.Session() as session:
             session.auth = ('TheGrind', 'TheGrind')

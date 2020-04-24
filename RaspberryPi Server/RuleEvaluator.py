@@ -15,6 +15,10 @@ class RuleEvaluator(object):
         Digit   => [0-9]+
         BinOp   => > | < | = | AND | OR
         UnOp    => NOT
+    
+    Raises a ParserExpresion on fail
+    
+    expression: list of expressions and binary operators
     '''
     def evaluate(self, expressions = []):
         evaluated = []
@@ -60,15 +64,16 @@ class RuleEvaluator(object):
         return self.evaluate(expressions)
     
     '''
-    Fix so that actual sensor objects are passed in instead of stand in
-
-    Constructs with grammar defined below from the parsed string/list provided
+    Parser a rule with grammar defined below from the parsed string/list provided, raises a 
+    ValueError or ParserException on fail
 
         Rule    => Expr Expr BinOp | Expr
         Expr    => Expr | Expr UnPo | Expr Expr BinOp | Expr Digit BinOp
         Digit   => [0-9]+
         BinOp   => > | < | = | AND | OR
         UnOp    => NOT
+
+    rule: list containing rule to parse
     '''
     def parseRule(self, rule):
         sensors = SensorList().getSensorObject()
@@ -127,6 +132,10 @@ class RuleEvaluator(object):
     
     '''
     Returns the index of the first occurance of a str
+
+    expression: expression to search
+
+    return: 0 or index of expression
     '''
     def getFirstOccurance(self, expressions):
         for i in range(len(expressions)):
@@ -137,6 +146,10 @@ class RuleEvaluator(object):
     '''
     Returns the first occurance of a binary operator in a give list or 0
     if no relavent operator is present
+
+    list: list to search
+
+    return: index of binary operator or last element in list
     '''
     def getFirstBinOperator(self, list):
         listLength = len(list)
@@ -158,12 +171,28 @@ class RuleEvaluator(object):
                 return 0
         
         return index
-       
+    
+    '''
+    Evaluates AND for two expressions
+
+    expressionOne: first expression
+    expressionTwo: second expression
+
+    return: boolean result
+    '''
     def evaluateAnd(self, expressionOne, expressionTwo):
         if expressionOne and expressionTwo:
             return True
         return False
     
+    '''
+    Evaluates OR for two expressions
+
+    expressionOne: first expression
+    expressionTwo: second expression
+
+    return: boolean result
+    '''
     def evaluateOr(self, expressionOne, expressionTwo):
         if expressionOne or expressionTwo:
             return True

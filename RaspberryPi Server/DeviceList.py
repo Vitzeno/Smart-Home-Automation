@@ -22,6 +22,11 @@ class DeviceList(object):
         self.devicesList = devices
         self.counter = 0
     
+    '''
+    Adds a new deivces to the devices list and auto increments ID
+
+    Name: name of device
+    '''
     def addDevice(self, name):
         self.counter += 1
         device = Devices(self.counter, name)
@@ -53,6 +58,8 @@ class DeviceList(object):
     Read device list from disk, if it does not exist call init to create one with default parameters
 
     Use this method to access the devices list object
+
+    return: deserialised object or newly created deivce list object
     '''
     def getDevicesObject(self):
         try:
@@ -73,6 +80,11 @@ class DeviceList(object):
         except (IOError, OSError, FileNotFoundError) as e:
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
+    '''
+    Converts object to sting
+
+    return: String format of object
+    '''
     def toStringFormat(self):
         allDevice = ""
         for i in self.devicesList:

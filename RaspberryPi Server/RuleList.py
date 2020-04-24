@@ -24,6 +24,12 @@ class RuleList(object):
         self.ruleList = rules
         self.counter = 0
     
+    '''
+    Creates a new rule object
+
+    name: name of rule
+    rule: list containing rule
+    '''
     def createRule(self, name, rule):
         self.counter += 1
         rule = Rule(self.counter, name, rule)
@@ -53,6 +59,8 @@ class RuleList(object):
     Read device list from disk, if it does not exist call init to create one with default parameters
 
     Use this method to access the devices list object
+
+    return: deserialised object or newly created deivce list object
     '''
     def getRuleObject(self):
         try:
@@ -74,7 +82,9 @@ class RuleList(object):
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
     '''
-    Prints out rule data in string format
+    Converts object to string
+
+    return: string format of object
     '''
     def toStringFormat(self):
         allRules = ""
