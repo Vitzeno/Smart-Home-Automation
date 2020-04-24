@@ -8,83 +8,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/LE"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:onClick="onClickAddRuleFragOp"
-            android:text="LE"
-            app:layout_constraintEnd_toStartOf="@+id/EQ"
-            app:layout_constraintStart_toEndOf="@+id/GE"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/AND"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClickAddRuleFragOp"
-            android:text="AND"
-            app:layout_constraintEnd_toStartOf="@+id/NOT"
-            app:layout_constraintStart_toEndOf="@+id/OR"
-            app:layout_constraintTop_toBottomOf="@+id/LE" />
-
-        <Button
-            android:id="@+id/OR"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="40dp"
-            android:layout_marginLeft="40dp"
-            android:onClick="onClickAddRuleFragOp"
-            android:text="OR"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/GE" />
-
-        <Button
-            android:id="@+id/GE"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="40dp"
-            android:onClick="onClickAddRuleFragOp"
-            android:text=">"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/EQ"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:onClick="onClickAddRuleFragOp"
-            android:text="="
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/NOT"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="40dp"
-            android:layout_marginRight="40dp"
-            android:onClick="onClickAddRuleFragOp"
-            android:text="NOT"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/EQ" />
-
         <TextView
             android:id="@+id/commandLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:hint="Rule: (Empty)"
             android:text="TextView"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/Send"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/ADD"
+            app:layout_constraintVertical_bias="0.172" />
 
         <Spinner
             android:id="@+id/Sen"
@@ -92,51 +27,74 @@
             android:layout_height="40dp"
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/commandLine"
+            android:layout_marginTop="85dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ADD" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
             android:id="@+id/Val"
             android:layout_width="100dp"
             android:layout_height="40dp"
+            android:layout_marginTop="85dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/commandLine"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ADD" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
             android:id="@+id/Op"
             android:layout_width="100dp"
             android:layout_height="40dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/commandLine"
+            android:layout_marginTop="90dp"
             app:layout_constraintEnd_toStartOf="@+id/Val"
             app:layout_constraintStart_toEndOf="@+id/Sen"
-            app:layout_constraintTop_toBottomOf="@+id/ADD" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/ADD"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="156dp"
+            android:background="@color/colorButton"
             android:onClick="onClickAddRuleFragOp"
             android:text="Add"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/Multi" />
 
         <Spinner
             android:id="@+id/Multi"
             android:layout_width="99dp"
             android:layout_height="45dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginLeft="32dp"
             android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ADD"
-            app:layout_constraintTop_toBottomOf="@+id/NOT" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Op" />
+
+        <Button
+            android:id="@+id/Send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="75dp"
+            android:layout_marginRight="75dp"
+            android:layout_marginBottom="50dp"
+            android:background="@color/colorButton"
+            android:onClick="onClickAddRuleFragOp"
+            android:text="Send"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/Clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="75dp"
+            android:layout_marginLeft="75dp"
+            android:layout_marginBottom="50dp"
+            android:background="@color/colorButton"
+            android:onClick="onClickAddRuleFragOp"
+            android:text="Clear"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>

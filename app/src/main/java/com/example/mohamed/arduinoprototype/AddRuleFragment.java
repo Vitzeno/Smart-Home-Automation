@@ -20,9 +20,11 @@ import androidx.fragment.app.Fragment;
 
 public class AddRuleFragment extends Fragment
 {
+    private enum clear{ FULL, PARTIAL};
+
     private View view;
     private static String commandStr;
-    private static String userStr = "";
+    private static String userStr = "Rule: (empty)";
     private TextView commandLn;
     private Spinner sen,val,op, multi;
     private String [] vals = {"0","1","2","3","4","5","6","7","8","9"};
@@ -41,8 +43,6 @@ public class AddRuleFragment extends Fragment
         op = view.findViewById(R.id.Op);
         multi = view.findViewById(R.id.Multi);
 
-        SetSpinners();
-
         return view;
     }
 
@@ -53,22 +53,31 @@ public class AddRuleFragment extends Fragment
         rulecount = 0;
         multi.setVisibility(View.GONE);
 
-        updateStr(null);
+        Reset(clear.FULL);
+
+//        updateStr(null);
 
     }
-    private void SetSpinners(){
-        ArrayAdapter<String> valAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, vals);
-        ArrayAdapter<String> opAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, ops);
-        ArrayAdapter<String> multiAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, mult);
+    private void Reset(clear c){
+        if(c == clear.PARTIAL || c == clear.FULL) {
+            ArrayAdapter<String> valAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, vals);
+            ArrayAdapter<String> opAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, ops);
+            ArrayAdapter<String> multiAdapter = new ArrayAdapter<String>(this.getActivity(), android.R.layout.simple_spinner_item, mult);
 
-        valAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-        opAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-        multiAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+            valAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+            opAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+            multiAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 
-        sen.setAdapter(valAdapter);
-        val.setAdapter(valAdapter);
-        op.setAdapter(opAdapter);
-        multi.setAdapter(multiAdapter);
+            sen.setAdapter(valAdapter);
+            val.setAdapter(valAdapter);
+            op.setAdapter(opAdapter);
+            multi.setAdapter(multiAdapter);
+        }
+        if(c == clear.FULL) {
+            updateStr(null);
+            updateUserStr(null);
+            rulecount = 0;
+        }
     }
     private void updateStr(String str){
         if(str != null)
@@ -84,42 +93,24 @@ public class AddRuleFragment extends Fragment
     }
     private void updateUserStr(String str){
 
-        Log.d("aaaa", "userstr : " + str );
-        str = str.replace("GE", "Greater Than");
-        str = str.replace(":", " ");
-        str = str.replace("LE", "Less Than");
-        str = str.replace("EQ", "Equals");
-
-        userStr = userStr + str;
+        if(str != null) {
+            Log.d("aaaa", "userstr : " + str);
+            str = str.replace("GE", "Greater Than");
+            str = str.replace(":", " ");
+            str = str.replace("LE", "Less Than");
+            str = str.replace("EQ", "Equals");
+            userStr = userStr + str;
+        }
+        else{
+            userStr = "";
+        }
+        //userStr = userStr + str;
         commandLn.setText(userStr);
     }
 
     public void onClickOp(View v){
         switch (v.getId()){
-            /*case R.id.GE:
-                Log.d("aaaa", ":GE");
-                updateStr(":GE");
-                break;
-            case R.id.LE:
-                Log.d("aaaa", ":LE");
-                updateStr(":LE");
-                break;
-            case R.id.EQ:
-                Log.d("aaaa", "EQ");
-                updateStr(":EQ");
-                break;
-            case R.id.AND:
-                Log.d("aaaa", "AND");
-                updateStr(":AND");
-                break;
-            case R.id.OR:
-                Log.d("aaaa", "OR");
-                updateStr(":OR");
-                break;
-            case R.id.NOT:
-                Log.d("aaaa", "NOT");
-                updateStr(":NOT");
-                break;*/
+
             case R.id.ADD:
                 String value = ":" + val.getSelectedItem().toString();
                 String sensor = ":" + sen.getSelectedItem().toString();
@@ -139,7 +130,29 @@ public class AddRuleFragment extends Fragment
 
                 updateStr(sensor + value + operator + additional);
 
-                SetSpinners();
+                Reset(clear.PARTIAL);
+                break;
+
+            case R.id.Clear:
+                Log.d("aaaa","Clearing box");
+                Reset(clear.FULL);
+                break;
+            case R.id.Send:
+                if(rulecount > 0) {
+                    Log.d("aaaa", "Attempting to send");
+                    byte[] send;
+                    StringBuffer outStringBuff = new StringBuffer("");
+                    outStringBuff.setLength(0);
+                    outStringBuff.append(commandStr);
+                    send = outStringBuff.toString().getBytes();
+                    ((MainActivity) getActivity()).BTservice.write(send);
+                    //BTservice.write(send);
+                }
+                else
+                {
+                    Log.d("aaaa", "Too few rules to send.");
+                }
+                Reset(clear.FULL);
                 break;
         }
     }

@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public NavigationView navView;
 
     public StringBuffer outStringBuff = new StringBuffer("");
-
+    public StringBuffer inStringBuff = new StringBuffer("");
     public BTService BTservice;
 
     // Bluetooth adaptor to use
@@ -343,8 +343,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     break;
                 case MESSAGE_READ:
-                    TextView outBox = findViewById(R.id.Received);
-                    outBox.setText(msg.getData().getString(INCOMING_DATA));
+                    //TextView outBox = findViewById(R.id.Received);
+                    //outBox.setText(msg.getData().getString(INCOMING_DATA));
+                    inStringBuff.append(msg.getData().getString(INCOMING_DATA));
+                    
                     Log.d("d", msg.getData().getString(INCOMING_DATA));
                     break;
                 case MESSAGE_DEVICE_NAME:
