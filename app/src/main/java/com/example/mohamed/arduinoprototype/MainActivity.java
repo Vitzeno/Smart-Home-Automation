@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //TextView outBox = findViewById(R.id.Received);
                     //outBox.setText(msg.getData().getString(INCOMING_DATA));
                     inStringBuff.append(msg.getData().getString(INCOMING_DATA));
-                    
+
                     Log.d("d", msg.getData().getString(INCOMING_DATA));
                     break;
                 case MESSAGE_DEVICE_NAME:
