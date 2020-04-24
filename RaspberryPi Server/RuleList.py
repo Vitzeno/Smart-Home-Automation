@@ -34,8 +34,8 @@ class RuleList(object):
     '''
     def setUpDefaultData(self):
         print("Add default data to object")
-        self.createRule("Rule One", [])
-        self.createRule("Rule Two", [])
+        self.createRule("Rule One", ("C:R:C:1:0:EQ:1:12:LE:OR").split(":"))
+        self.createRule("Rule Two", ("C:R:C:S1:21:LE").split(":"))
         self.counter = 2
 
     '''

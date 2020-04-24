@@ -56,7 +56,7 @@ class BluetoothHandler:
                 BluetoothHandler.Dict["recv"] = BluetoothHandler.client_sock.recv(1024)
                 
                 data = BluetoothHandler.Dict["recv"].decode("utf-8")
-                print("Data = ", data)
+                #print("Data = ", data)
                 BluetoothHandler.sendToClient(data)
 
                 BluetoothHandler.MessageEvent.set()

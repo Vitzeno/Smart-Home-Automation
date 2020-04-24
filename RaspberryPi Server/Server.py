@@ -24,6 +24,7 @@ from Group import Group
 from GroupList import GroupList
 
 running = []
+parser = Parser()
 
 def comms():
     dictionary = Manager().dict()
@@ -49,9 +50,9 @@ def comms():
     try:
         while conStatus: #dictionary["status"]:
 
-            print(dictionary["name"])
-            print(subprocess.getoutput("hcitool con").split())
-            MessageEvent.wait(2)
+            #print(dictionary["name"])
+            #print(subprocess.getoutput("hcitool con").split())
+            MessageEvent.wait(0.25)
             
             status = subprocess.getoutput("hcitool con").split()
             
@@ -59,18 +60,13 @@ def comms():
                 conStatus = False
 
             if MessageEvent.is_set():
-                print(dictionary["recv"].decode("utf-8"))
-
-                if(dictionary["recv"].decode("utf-8") == 'H'):
-                    Radio.switchSocket(1, True)
-                if(dictionary["recv"].decode("utf-8") == 'L'):
-                    Radio.switchSocket(1, False)
-                
-                if(dictionary["recv"].decode("utf-8") == 'S'):
-                    switch = not switch
-                    Radio.switchSocket(2, switch)
-                pass
-            MessageEvent.clear()
+                print("Main Thread: {0}" .format(dictionary["recv"].decode("utf-8")))
+                try:
+                    print(parser.parseInput(dictionary["recv"].decode("utf-8")))
+                except (ParserException) as e:
+                    print(e)
+                MessageEvent.clear()
+            
     except (OSError, KeyboardInterrupt) as e:
         EndEvent.set()
         ConnectEvent.clear()
@@ -90,64 +86,23 @@ if __name__ == '__main__':
     Serialise.setDirectory()
 
     deviceList = DeviceList().getDevicesObject()
-    print(deviceList.toStringFormat())
+    #print(deviceList.toStringFormat())
 
     groupList = GroupList().getGroupObject()
-    print(groupList.toStringFormat())
+    #print(groupList.toStringFormat())
 
     sensorList = SensorList().getSensorObject()
-    print(sensorList.toStringFormat())
-    
+    #print(sensorList.toStringFormat())
+
     ruleList = RuleList().getRuleObject()
-    print(ruleList.toStringFormat())
+    #print(ruleList.toStringFormat())
 
-    s1 = sensorList.getSensorByID(1)
-    s2 = sensorList.getSensorByID(2)
-    #ruleList.createRule("New Rule", [Expression().equalsTo(s1, 22), Expression().greaterThan(s2, 0), "AND"])
-    #ruleList.setRuleObject()
+    #eval = RuleEvaluator()
+    #eval.parseRule(ruleList.getRuleByID(1).rule)
 
-    try:
-        print(groupList.getGroupByID(4).toStringFormat())
-    except (ValueError) as e:
-        print(e)
-    
-    try:
-        print(sensorList.getSensorByID(2).toStringFormat())
-    except (ValueError) as e:
-        print(e)
-    
-    try:
-        print(ruleList.getRuleByID(3).toStringFormat())
-    except (ValueError) as e:
-        print(e)
-
-    p = Parser()
-    # valid commands
-
-    p.parseInput("R:S:2")
-    p.parseInput("R:R:4")
-    p.parseInput("R:D:7")
-    p.parseInput("R:G:6")
-    p.parseInput("R:AS")
-    p.parseInput("R:AR")
-    p.parseInput("R:AD")
-    p.parseInput("R:AG")
-
-    try:
-        p.parseInput("C:R:C:f:OR:e:AND:EQ:LE")
-    except (ParserException) as e:
-        print(e)
-        
-    try:
-        p.parseInput("C:R:C:21:GE:LE:AND")
-    except (ParserException) as e:
-        print(e)
-
-    try:
-        p.parseInput("C:R:C:21::GE:LE:AND")
-    except (ParserException) as e:
-        print(e)
-
+    #print(parser.parseInput("R:AR"))
+    #print(parser.parseInput("R:R:3"))
+    #print(parser.parseInput("R:R:69"))
     
     running = True
     while running:

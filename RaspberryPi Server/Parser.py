@@ -1,5 +1,6 @@
 from Expression import Expression
 from RuleEvaluator import RuleEvaluator
+from RuleList import RuleList
 from Sensor import Sensor
 from SensorList import SensorList
 from Group import Group
@@ -11,7 +12,6 @@ from ParserException import ParserException
 
 class Parser:
 
-    ruleList = []
     input = []
 
     def parseInput(self, input):
@@ -20,7 +20,7 @@ class Parser:
         if(list[0] == "C"):
             self.handleCommand(list[1:])
         elif(list[0] == "R"):
-            self.handleRequest(list[1:])
+            return self.handleRequest(list[1:])
         else:
             raise ParserException("Invalid input")
 
@@ -55,6 +55,7 @@ class Parser:
     def handleRule(self, rule):
         if(rule[0] == "C"):
             self.ruleList = []
+            self.isValidPostFixNotation(rule)
             self.createRule(rule[1:])
         elif(rule[0] == "D"):
             print("Delete rule {0}" .format(rule[1:]))
@@ -62,24 +63,32 @@ class Parser:
             raise ParserException("Invalid rule")
 
     def handleRequest(self, request):
+        ruleList = RuleList().getRuleObject()
+
         if(request[0] == "S"):
-            print("Request sensor {0}" .format(request[1:]))
+            return("Request sensor {0}" .format(request[-1]))
         elif(request[0] == "AS"):
-            print("Request all sensor data {0}" .format(request[1:]))
+            return("Request all sensor data {0}" .format(request[-1]))
         elif(request[0] == "D"):
-            print("Request device {0}" .format(request[1:]))
+            return("Request device {0}" .format(request[-1]))
         elif(request[0] == "AD"):
-            print("Request all device data {0}" .format(request[1:]))
+            return("Request all device data {0}" .format(request[-1]))
         elif(request[0] == "R"):
-            print("Request sensor {0}" .format(request[1:]))
+            try:
+                return(ruleList.getRuleByID(request[-1]).toStringFormat())
+            except (ValueError) as e:
+                return("Cannot find rule with id {0}" .format(request[-1]))
         elif(request[0] == "AR"):
-            print("Request all rule data {0}" .format(request[1:]))
+            return(ruleList.toStringFormat())
         elif(request[0] == "G"):
-            print("Request group {0}" .format(request[1:]))
+            return("Request group {0}" .format(request[1:]))
         elif(request[0] == "AG"):
-            print("Request all group data {0}" .format(request[1:]))
+            return("Request all group data {0}" .format(request[-1]))
         else:
             raise ParserException("Invalid request")
+
+    def isValidPostFixNotation(self, rule):
+        return("Validating notation")
 
     '''
     Fix so that actual sensor objects are passed in instead of stand in
@@ -93,76 +102,11 @@ class Parser:
         UnOp    => NOT
     '''
     def createRule(self, rule):
-        s1 = Sensor(0, "Temp")
-        s2 = Sensor(1, "Humid")
-        
-        print("Passing in rule list {0}" .format(rule))
-        index = self.getFirstBinOperator(rule)
-        print("Operator {0} at index: {1}" .format(rule[index], index))
-        try:
-            # Handling base case of recursive function
-            if len(rule) == 1:
-                if (rule[index] == "AND"):
-                    self.ruleList.append("AND")
-                elif (rule[index] == "OR"):
-                    self.ruleList.append("OR")
-                else:
-                    raise ParserException("Invalid binary operator")
-            elif (rule[index] == "GE"):
-                self.ruleList.append(Expression().greaterThan(s1, int(rule[index - 1])))
-                print("{0} greater than {1}" .format(rule[index - 2], rule[index - 1]))
-                if len(rule[index + 1:]) > 0:
-                    self.createRule(rule[index + 1:])
-            elif (rule[index] == "LE"):
-                self.ruleList.append(Expression().lessThan(s2, int(rule[index - 1])))
-                print("{0} less than {1}" .format(rule[index - 2], rule[index - 1]))
-                if len(rule[index + 1:]) > 0:
-                    self.createRule(rule[index + 1:])
-            elif (rule[index] == "EQ"):
-                self.ruleList.append(Expression().equalsTo(s1, int(rule[index - 1])))
-                print("{0} equals to {1}" .format(rule[index - 2], rule[index - 1]))
-                if len(rule[index + 1:]) > 0:
-                    self.createRule(rule[index + 1:])
-            elif (rule[index] == "AND"):
-                self.ruleList.append("AND")
-                if len(rule[index + 1:]) > 0:
-                    self.createRule(rule[index + 1:])
-            elif (rule[index] == "OR"):
-                self.ruleList.append("OR")
-                if len(rule[index + 1:]) > 0:
-                    self.createRule(rule[index + 1:])
-            else:
-                raise ParserException("Invalid binary operator")
-        except (ValueError) as e:
-            raise ParserException("Syntax validation failed")
-        
-        print("Created rule {0}" .format(self.ruleList))
-        print("Mobile Formatted rule {0}" .format(self.input))
+        ruleList = RuleList().getRuleObject()
+        ruleList.createRule("", self.input)
+        ruleList.setRuleObject()
+
+        print("Created rule {0}" .format(self.input))
     
-    
-    '''
-    Returns the first occurance of a binary operator in a give list or 0
-    if no relavent operator is present
-    '''
-    def getFirstBinOperator(self, list):
-        listLength = len(list)
-        index = listLength
-        for i in range(listLength):
-            if list[i] == "GE":
-                index = min(index, i)
-            elif list[i] == "LE":
-                index = min(index, i)
-            elif list[i] == "EQ":
-                index = min(index, i)
-            elif list[i] == "AND":
-                index = min(index, i)
-            elif list[i] == "OR":
-                index = min(index, i)
-            elif i == listLength - 1:
-                print("No valid operator found in current iteration")
-                print("Make sure to use one of the following: GE, LE, EQ, AND, OR")
-                return 0
-        
-        return index
 
 ## Update protocol to allow rules to be entered
