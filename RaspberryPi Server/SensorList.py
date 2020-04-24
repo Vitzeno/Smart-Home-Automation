@@ -22,7 +22,7 @@ class SensorList(object):
     FILE_NAME = "SensorList"
 
     def __init__(self, sensors = []):
-        print("Init Singleton Device List Object")
+        print("Init Singleton Sensor List Object")
         self.sensorList = sensors
         self.counter = 0
 
@@ -91,8 +91,10 @@ class SensorList(object):
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
     def toStringFormat(self):
+        allSensors = ""
         for i in self.sensorList:
-            print(i.toStringFormat())
+            allSensors = allSensors + i.toStringFormat()
+        return allSensors
     
     '''
     Search for a sensor object by ID, possible that ID and list index are the same

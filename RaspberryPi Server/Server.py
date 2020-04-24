@@ -60,9 +60,13 @@ def comms():
                 conStatus = False
 
             if MessageEvent.is_set():
-                print("Main Thread: {0}" .format(dictionary["recv"].decode("utf-8")))
+                print("\n Main Thread Recived: {0} \n" .format(dictionary["recv"].decode("utf-8")))
                 try:
-                    print(parser.parseInput(dictionary["recv"].decode("utf-8")))
+                    data = parser.parseInput(dictionary["recv"].decode("utf-8"))
+                    if data is not None:
+                        print(data)
+                        dictionary["write"] = data
+                        SendEvent.set()
                 except (ParserException) as e:
                     print(e)
                 MessageEvent.clear()

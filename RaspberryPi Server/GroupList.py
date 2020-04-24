@@ -80,8 +80,10 @@ class GroupList(object):
     Prints out group data in string format
     '''
     def toStringFormat(self):
+        allGroups = ""
         for i in self.groupList:
-            print(i.toStringFormat())
+            allGroups = allGroups = i.toStringFormat()
+        return allGroups
 
     '''
     Search for a group object by ID, possible that ID and list index are the same

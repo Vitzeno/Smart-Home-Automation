@@ -74,8 +74,10 @@ class DeviceList(object):
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
     def toStringFormat(self):
+        allDevice = ""
         for i in self.devicesList:
-            print(i.toStringFormat())
+            allDevice = allDevice + i.toStringFormat()
+        return allDevice
             
 
 

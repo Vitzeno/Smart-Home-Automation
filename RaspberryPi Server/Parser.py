@@ -103,10 +103,10 @@ class Parser:
     '''
     def createRule(self, rule):
         ruleList = RuleList().getRuleObject()
-        ruleList.createRule("", self.input)
+        ruleList.createRule("", self.input.split(":"))
         ruleList.setRuleObject()
 
-        print("Created rule {0}" .format(self.input))
+        print("Created rule {0}" .format(self.input.split(":")))
     
 
 ## Update protocol to allow rules to be entered

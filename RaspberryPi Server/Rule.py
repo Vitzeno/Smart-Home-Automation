@@ -7,5 +7,5 @@ class Rule(object):
         self.rule = rule
     
     def toStringFormat(self):
-        return "Name: " + str(self.name) + " ID: " + str(self.id) + " Rule: " + str(self.rule)
+        return "Name: " + str(self.name) + " ID: " + str(self.id) + " Rule: [" + ':'.join(self.rule) + "] "
         #return "Name: " + str(self.name) + " ID: " + str(self.id)

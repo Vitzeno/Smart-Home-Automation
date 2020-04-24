@@ -77,8 +77,10 @@ class RuleList(object):
     Prints out rule data in string format
     '''
     def toStringFormat(self):
+        allRules = ""
         for i in self.ruleList:
-            print(i.toStringFormat())
+            allRules = allRules + i.toStringFormat()
+        return allRules
 
     '''
     Search for a rule object by ID, possible that ID and list index are the same

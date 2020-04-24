@@ -57,11 +57,16 @@ class BluetoothHandler:
                 
                 data = BluetoothHandler.Dict["recv"].decode("utf-8")
                 #print("Data = ", data)
-                BluetoothHandler.sendToClient(data)
+                #BluetoothHandler.sendToClient(data)
 
                 BluetoothHandler.MessageEvent.set()
                 BluetoothHandler.Lock.release()
 
+                BluetoothHandler.SendEvent.wait(0.25)
+
+                if BluetoothHandler.SendEvent.is_set():
+                    BluetoothHandler.sendToClient(BluetoothHandler.Dict["write"].encode("utf-8"))
+                    BluetoothHandler.SendEvent.clear()
 
                 if BluetoothHandler.EndEvent.is_set():
                     BluetoothHandler.cleanUpBT()
@@ -76,7 +81,9 @@ class BluetoothHandler:
     @classmethod
     def sendToClient(cls, message):
         BluetoothHandler.client_sock.send(message)
-        print("Sending: ", message) 
+        print("============================================================================")
+        print("SENDING: ", message) 
+        print("============================================================================")
 
     @classmethod
     def cleanUpBT(cls):
