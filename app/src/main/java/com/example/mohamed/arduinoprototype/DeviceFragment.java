@@ -14,7 +14,11 @@ public class DeviceFragment extends Fragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_device, container, false);
+        View v = inflater.inflate(R.layout.fragment_device, container, false);
+
+        ((MainActivity)getActivity()).setfragmentstate(MainActivity.fragmentState.DEVICE);
+
+        return v;
     }
     @Override
     public void onResume(){

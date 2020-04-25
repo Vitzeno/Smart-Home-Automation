@@ -14,7 +14,11 @@ public class SensorFragment extends Fragment
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_sensor, container, false);
+        View v = inflater.inflate(R.layout.fragment_sensor, container, false);
+
+        ((MainActivity)getActivity()).setfragmentstate(MainActivity.fragmentState.SENSOR);
+
+        return v;
     }
     @Override
     public void onResume(){

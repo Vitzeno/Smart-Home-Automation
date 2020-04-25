@@ -18,6 +18,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -356,7 +357,7 @@ public class BTService extends Service {
                     {
                         Log.d("incoming", "bytes: " + bytes);
                         incomingString = new String(buffer, 0, bytes);
-                        Log.d("incoming", "Data: " + incomingString + " " + mmInStream.toString());
+                        Log.d("incoming", "Data: " + incomingString + " of type: " + mmInStream.toString());
 
                         Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_READ);
                         Bundle bundle = new Bundle();

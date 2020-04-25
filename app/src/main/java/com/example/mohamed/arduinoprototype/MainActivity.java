@@ -34,12 +34,18 @@ import com.google.android.material.navigation.NavigationView;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+
+    public enum fragmentState{RULE,SENSOR,DEVICE, BLUETOOTH}
+    private fragmentState fragState;
 
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
@@ -71,11 +77,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public ArrayAdapter<String> arrayAdapter;
     public ArrayList<String> deviceNames = new ArrayList<>();
     public ArrayList<String> macAddresses = new ArrayList<>();
-
     public HashMap<String, String> listOfDevices = new HashMap<String, String>();
+
+    public ArrayAdapter<String> ruleAdaptor;
+    public ArrayList<String> ruleList = new ArrayList<>();
+    public ArrayList<String> formattedRules = new ArrayList<>();
+    public ArrayList<String> ruleIDList = new ArrayList<>();
+    public HashMap<String,String> listOfRules = new HashMap<>();
 
     public FragmentManager fm = getSupportFragmentManager();
     public BluetoothFragment btfm;
+    public RuleFragment rlfm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void populateListView() {
         //lstView = (ListView) findViewById(R.id.lstDevices);
         arrayAdapter = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, deviceNames);
+
         arrayAdapter.notifyDataSetChanged();
 
         btfm = (BluetoothFragment) fm.findFragmentByTag("BTFrag");
@@ -198,6 +211,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //btfm.lstView.setAdapter(arrayAdapter);
     }
 
+    public void populateRuleView(){
+
+        ruleAdaptor = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, formattedRules);
+        ruleAdaptor.notifyDataSetChanged();
+
+        rlfm = (RuleFragment) fm.findFragmentByTag("RulFrag");
+        Log.d("aaaa", "Populate!");
+        if(rlfm != null){
+            rlfm.updatelist();
+            Log.d("aaaa", "update sent");
+        }
+    }
 
 
     private void clearBTList(){
@@ -269,11 +294,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void onClickAddRuleFragOp(View v)
-    {
+    public void onClickAddRuleFragOp(View v){
         AddRuleFragment ad = (AddRuleFragment) fm.findFragmentByTag("AddRule");
         ad.onClickOp(v);
     }
+    public void onClickRuleFragOP(View v){
+        RuleFragment rf = (RuleFragment) fm.findFragmentByTag("RulFrag");
+        rf.onClickOp(v);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check is bluetooth request was granted
@@ -347,7 +376,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //outBox.setText(msg.getData().getString(INCOMING_DATA));
                     inStringBuff.append(msg.getData().getString(INCOMING_DATA));
 
-                    Log.d("d", msg.getData().getString(INCOMING_DATA));
+                    Log.d("aaaa", "Data = " + msg.getData().getString(INCOMING_DATA));
+                    Log.d("aaaa","InStream = " + inStringBuff.toString());
+
+                    processInput(inStringBuff.toString());
+
+                    inStringBuff.setLength(0);
                     break;
                 case MESSAGE_DEVICE_NAME:
 
@@ -383,6 +417,119 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
     };
+
+    public void setfragmentstate(fragmentState frag){
+        fragState = frag;
+    }
+
+    private String convertRules(String str){
+        String ret = "";
+        ArrayList<String> array = new ArrayList<>();
+
+        String s,d,op, cn, tmp;
+        str = str.replace("C:R:C:", ":");
+
+        str = str.replace(":AND", ":AND]");
+        str = str.replace(":OR", ":OR]");
+        str = str.replace(":NOT", ":NOT]");
+
+        //str = str.replace("", ")");
+        //String sub = str.substring(0, str.indexOf(":AND"));
+        Matcher m = Pattern.compile("(\\[|OR:|AND:|NOT:|:)(.*?)(:GE|:LE|:EQ|:AND|:OR|:NOT|])").matcher(str);
+        while(m.find()){
+            array.add(m.group());
+        }
+        if(array != null)
+        {
+            tmp = array.get(0).substring(1);
+            s = tmp.split(":")[0];
+            d = tmp.split(":")[1];
+            op = tmp.split(":")[2];
+            ret = s + ":" + op + ":" + d;
+            //Log.d("aaaa","split: " + Arrays.toString(tmp.split(":")));
+            Log.d("aaaa","ret: " + ret);
+            if(array.size() > 2) {
+                for (int i = 1; i <= array.size() - 1; i += 2) {
+                    //Log.d("aaaa", "ar= " + array.get(i));
+                    tmp = array.get(i).substring(1);
+                    s = tmp.split(":")[0];
+                    d = tmp.split(":")[1];
+                    op = tmp.split(":")[2];
+
+                    tmp = array.get(i + 1);
+                    cn = tmp.substring(0, tmp.length() - 1);
+                    ret += cn + ":" + s + ":" + op + ":" + d;
+                    //Log.d("aaaa","split: " + Arrays.toString(tmp.split(":")));
+                    Log.d("aaaa", "ret: " + ret);
+                }
+            }
+        }
+
+        return ret;
+    }
+    private String writeUserRule(String id, String str){
+        String ret;
+        if(str != null) {
+            Log.d("aaaa", "userstr : " + str);
+            str = str.replace("GE", "Greater Than");
+            str = str.replace(":", " ");
+            str = str.replace("LE", "Less Than");
+            str = str.replace("EQ", "Equals");
+
+        }
+        else{
+            str = "Null String";
+        }
+
+        ret = "ID: " + id + " {" + str + "}";
+
+        return ret;
+    }
+    private void processInput(String inString){
+        switch(fragState){
+            case RULE:
+                String str = inString;
+                ruleList.clear();
+                ruleIDList.clear();
+                listOfRules.clear();
+                formattedRules.clear();
+
+                Matcher m = Pattern.compile("ID:(.*?)]").matcher(str);
+                while(m.find()) {
+                    //Log.d("aaaa", "match: " + m.group());
+
+                    String[] pairs = m.group().split("Rule: ");
+                    //Log.d("aaaa",Arrays.toString(pairs));
+
+                    String id = pairs[0].substring(4);
+                    String rule =  pairs[1].substring(1, pairs[1].length() -1);
+                    Log.d("aaaa","ID: " + id + "rule: " + rule);
+
+                    String format = convertRules(rule);
+                    format = writeUserRule(id, format);
+
+                    Log.d("aaaa","converted: " + format);
+                    ruleIDList.add(id);
+                    ruleList.add(rule);
+                    formattedRules.add(format);
+
+                    listOfRules.put(id,rule);
+                }
+
+                populateRuleView();
+
+                break;
+            case BLUETOOTH:
+
+                break;
+            case SENSOR:
+
+                break;
+            case DEVICE:
+
+                break;
+        }
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstance) {

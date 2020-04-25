@@ -12,6 +12,7 @@
             android:id="@+id/commandLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/colorItems"
             android:gravity="center"
             android:hint="Rule: (Empty)"
             android:text="TextView"
@@ -28,6 +29,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="85dp"
+            android:background="@color/colorPanel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -38,6 +40,7 @@
             android:layout_marginTop="85dp"
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
+            android:background="@color/colorPanel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,6 +49,7 @@
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:layout_marginTop="90dp"
+            android:background="@color/colorPanel"
             app:layout_constraintEnd_toStartOf="@+id/Val"
             app:layout_constraintStart_toEndOf="@+id/Sen"
             app:layout_constraintTop_toTopOf="parent" />
@@ -66,6 +70,7 @@
             android:layout_width="99dp"
             android:layout_height="45dp"
             android:layout_marginTop="20dp"
+            android:background="@color/colorPanel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/Op" />

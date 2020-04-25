@@ -31,13 +31,16 @@ public class BluetoothFragment extends Fragment
     public ArrayAdapter<String> arrayAdapter;
     public ArrayList<String> devices;
     public ArrayList<String> macAddresses = new ArrayList<>();
-
     public HashMap<String, String> listOfDevices = new HashMap<String, String>();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_bluetooth, container, false);
+        View v = inflater.inflate(R.layout.fragment_bluetooth, container, false);
+
+        ((MainActivity)getActivity()).setfragmentstate(MainActivity.fragmentState.BLUETOOTH);
+
+        return v;
     }
 
     @Override

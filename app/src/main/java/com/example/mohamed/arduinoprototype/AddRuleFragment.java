@@ -77,6 +77,7 @@ public class AddRuleFragment extends Fragment
             updateStr(null);
             updateUserStr(null);
             rulecount = 0;
+            multi.setVisibility(View.GONE);
         }
     }
     private void updateStr(String str){
@@ -90,6 +91,7 @@ public class AddRuleFragment extends Fragment
         if(rulecount > 0){
             multi.setVisibility(View.VISIBLE);
         }
+
     }
     private void updateUserStr(String str){
 
@@ -140,13 +142,20 @@ public class AddRuleFragment extends Fragment
             case R.id.Send:
                 if(rulecount > 0) {
                     Log.d("aaaa", "Attempting to send");
-                    byte[] send;
-                    StringBuffer outStringBuff = new StringBuffer("");
-                    outStringBuff.setLength(0);
-                    outStringBuff.append(commandStr);
-                    send = outStringBuff.toString().getBytes();
-                    ((MainActivity) getActivity()).BTservice.write(send);
-                    //BTservice.write(send);
+                    try {
+                        byte[] send;
+
+                        StringBuffer outStringBuff = new StringBuffer("");
+                        outStringBuff.setLength(0);
+                        outStringBuff.append(commandStr);
+                        send = outStringBuff.toString().getBytes();
+                        ((MainActivity) getActivity()).BTservice.write(send);
+                        //BTservice.write(send);
+
+                    }catch (Exception e) {
+                        Log.d("aaaa", "Error, couldn't send. Check connection");
+                        Log.d("aaaa", e.toString());
+                    }
                 }
                 else
                 {
