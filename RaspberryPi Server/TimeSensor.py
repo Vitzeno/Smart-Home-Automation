@@ -1,5 +1,5 @@
 from Devices import Devices
-import time
+from datetime import datetime
 
 class TimeSensor(Devices):
 
@@ -14,7 +14,10 @@ class TimeSensor(Devices):
     Returns : objects main reading, in this case time
     '''
     def getReading(self):
-        self.time = time.time()
+        now = datetime.now()
+        seconds_since_midnight = (now - now.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
+        minutes_since_midnigth = seconds_since_midnight / 60
+        self.time = round(minutes_since_midnigth)
         return self.time
     
     '''

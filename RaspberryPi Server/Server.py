@@ -11,6 +11,7 @@ import os
 import Radio as Radio
 import Serialise as Serialise
 from BluetoothHandler import BluetoothHandler
+from RuleHandler import RuleHandler
 from Devices import Devices
 from DeviceList import DeviceList
 from Parser import Parser
@@ -101,17 +102,22 @@ if __name__ == '__main__':
     ruleList = RuleList().getRuleObject()
     #print(ruleList.toStringFormat())
 
-    eval = RuleEvaluator()
-    eval.parseRule(ruleList.getRuleByID(1).rule)
+    #eval = RuleEvaluator()
+    #print("Server Evaluated to: {0}" .format(eval.parseRule(ruleList.getRuleByID(3).rule)))
 
     #parser.parseInput("C:R:C:2:0:2:EQ:0:2:GE:AND")
 
     #print(parser.parseInput("R:AR"))
     #print(parser.parseInput("R:R:3"))
     #print(parser.parseInput("R:R:69"))
+
+    proc = Process(target = RuleHandler.beginEvaluation)
+    proc.start()
     
     running = True
+    
     while running:
         comms()
+
     Radio.cleanUp()
     print("Gracefully Quit")

@@ -5,8 +5,8 @@ from SensorList import SensorList
 
 class RuleEvaluator(object):
 
-    ruleList = []
-    target = None
+    def __init__(self):
+        self.ruleList = []
 
     '''
     Evaluate a given rule, grammar for rule defined below:
@@ -78,12 +78,6 @@ class RuleEvaluator(object):
     '''
     def parseRule(self, rule):
         sensors = SensorList().getSensorObject()
-
-        # Set device ID to target
-        if self.target is not None:
-            print("Rule for device {0}" .format(self.target))
-        else:
-            self.target = rule[3]
         
         print("Passing in rule list {0}" .format(rule))
         index = self.getFirstBinOperator(rule)
@@ -133,8 +127,9 @@ class RuleEvaluator(object):
                 raise ParserException("Invalid binary operator")
         except (ValueError) as e:
             raise ParserException("Syntax validation failed")
-
-        self.evaluate(self.ruleList)
+        
+        return self.evaluate(self.ruleList)
+        #self.evaluate(self.ruleList)
     
     '''
     Returns the index of the first occurance of a str

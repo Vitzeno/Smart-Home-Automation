@@ -134,7 +134,7 @@ class Parser:
     '''
     def createRule(self, rule):
         ruleList = RuleList().getRuleObject()
-        ruleList.createRule("", self.input.split(":"))
+        ruleList.createRule("", self.input.split(":"), self.input.split(":")[4:])
         ruleList.setRuleObject()
 
         print("Created rule {0}" .format(self.input.split(":")))

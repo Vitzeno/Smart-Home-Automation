@@ -1,10 +1,14 @@
 
 class Rule(object):
 
-    def __init__(self, id, name, rule):
+    def __init__(self, id, name, rule, parsableRule):
         self.id = id
         self.name = name
         self.rule = rule
+        self.parsableRule = parsableRule
+
+    def getTarget(self):
+        return self.rule[3]
     
     '''
     Converts object to string
