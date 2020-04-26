@@ -25,34 +25,26 @@
         <Spinner
             android:id="@+id/Sen"
             android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="85dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="20dp"
             android:background="@color/colorPanel"
+            app:layout_constraintBottom_toBottomOf="@+id/Op"
+            app:layout_constraintEnd_toStartOf="@+id/Op"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Spinner
-            android:id="@+id/Val"
-            android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="85dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:background="@color/colorPanel"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/Type" />
 
         <Spinner
             android:id="@+id/Op"
             android:layout_width="100dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="90dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:background="@color/colorPanel"
-            app:layout_constraintEnd_toStartOf="@+id/Val"
-            app:layout_constraintStart_toEndOf="@+id/Sen"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Type" />
 
         <Button
             android:id="@+id/ADD"
@@ -67,10 +59,10 @@
 
         <Spinner
             android:id="@+id/Multi"
-            android:layout_width="99dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="20dp"
+            android:layout_width="104dp"
+            android:layout_height="wrap_content"
             android:background="@color/colorPanel"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/Op" />
@@ -100,6 +92,65 @@
             android:text="Clear"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <Spinner
+            android:id="@+id/Type"
+            android:layout_width="168dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Device" />
+
+        <EditText
+            android:id="@+id/Temp"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@color/colorItems"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Type" />
+
+        <TextView
+            android:id="@+id/TimeVal"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@color/colorItems"
+            android:clickable="true"
+            android:gravity="center"
+            android:text="Pick Time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/Type" />
+
+        <Spinner
+            android:id="@+id/Device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Device:"
+            app:layout_constraintEnd_toStartOf="@+id/Device"
+            app:layout_constraintHorizontal_bias="0.956"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>

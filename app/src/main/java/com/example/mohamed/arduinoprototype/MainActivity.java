@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public enum fragmentState{RULE,SENSOR,DEVICE, BLUETOOTH}
     private fragmentState fragState;
+    private int req = 0;
 
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
@@ -85,9 +86,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public ArrayList<String> ruleIDList = new ArrayList<>();
     public HashMap<String,String> listOfRules = new HashMap<>();
 
+    public ArrayAdapter<String> sensorAdaptor;
+    public ArrayList<String> sensorList = new ArrayList<>();
+    //public ArrayList<String> formattedRules = new ArrayList<>();
+    public ArrayList<String> sensorIDList = new ArrayList<>();
+    public HashMap<String,String> listOfSensors = new HashMap<>();
+
+    public ArrayAdapter<String> ObjAdaptor;
+    public ArrayList<String> ObjList = new ArrayList<>();
+    //public ArrayList<String> formattedRules = new ArrayList<>();
+    public ArrayList<String> ObjIDList = new ArrayList<>();
+    public HashMap<String,String> listOfObjs = new HashMap<>();
+
+
     public FragmentManager fm = getSupportFragmentManager();
     public BluetoothFragment btfm;
     public RuleFragment rlfm;
+    public SensorFragment snfm;
+    public DeviceFragment dvfm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -401,13 +417,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         case BTService.STATE_LISTEN:
                             findViewById(R.id.txtBTStatus).setBackgroundColor(Color.RED);
                             Log.d("Status", "BT listening");
+                            req = 0;
                             break;
                         case BTService.STATE_CONNECTING:
                             findViewById(R.id.txtBTStatus).setBackgroundColor(Color.YELLOW);
                             Log.d("Status", "BT Connecting");
                             break;
                         case BTService.STATE_CONNECTED:
-                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.GREEN);
+                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.BLUE);
+                            req = 1;
+                            requestAll(req);
                             Log.d("Status", "BT Connected");
                             break;
                         default:
@@ -418,10 +437,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    public void requestAll(int i) {
+        if (i == 1) {
+            byte[] send = "R:AR".getBytes();
+            BTservice.write(send);
+        }else if(i == 2){
+            byte[] send = "R:AS".getBytes();
+            BTservice.write(send);
+        }else if(i == 3){
+            byte[] send = "R:AD".getBytes();
+            BTservice.write(send);
+        }else if(i == 4){
+            byte[] send = "R:AG".getBytes();
+            BTservice.write(send);
+        }else{
+            req = 0;
+            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.GREEN);
+        }
+    }
     public void setfragmentstate(fragmentState frag){
         fragState = frag;
     }
 
+    private void processRules(String inString){
+        String str = inString;
+        ruleList.clear();
+        ruleIDList.clear();
+        listOfRules.clear();
+        formattedRules.clear();
+
+        Matcher m = Pattern.compile("ID:(.*?)]").matcher(str);
+        while(m.find()) {
+            //Log.d("aaaa", "match: " + m.group());
+
+            String[] pairs = m.group().split("Rule: ");
+            //Log.d("aaaa",Arrays.toString(pairs));
+
+            String id = pairs[0].substring(4);
+            String rule =  pairs[1].substring(1, pairs[1].length() -1);
+            Log.d("aaaa","ID: " + id + "rule: " + rule);
+
+            String format = convertRules(rule);
+            format = writeUserRule(id, format);
+
+            Log.d("aaaa","converted: " + format);
+            ruleIDList.add(id);
+            ruleList.add(rule);
+            formattedRules.add(format);
+
+            listOfRules.put(id,rule);
+        }
+    }
     private String convertRules(String str){
         String ret = "";
         ArrayList<String> array = new ArrayList<>();
@@ -485,41 +551,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return ret;
     }
+
     private void processInput(String inString){
         switch(fragState){
             case RULE:
-                String str = inString;
-                ruleList.clear();
-                ruleIDList.clear();
-                listOfRules.clear();
-                formattedRules.clear();
-
-                Matcher m = Pattern.compile("ID:(.*?)]").matcher(str);
-                while(m.find()) {
-                    //Log.d("aaaa", "match: " + m.group());
-
-                    String[] pairs = m.group().split("Rule: ");
-                    //Log.d("aaaa",Arrays.toString(pairs));
-
-                    String id = pairs[0].substring(4);
-                    String rule =  pairs[1].substring(1, pairs[1].length() -1);
-                    Log.d("aaaa","ID: " + id + "rule: " + rule);
-
-                    String format = convertRules(rule);
-                    format = writeUserRule(id, format);
-
-                    Log.d("aaaa","converted: " + format);
-                    ruleIDList.add(id);
-                    ruleList.add(rule);
-                    formattedRules.add(format);
-
-                    listOfRules.put(id,rule);
-                }
-
+                processRules(inString);
                 populateRuleView();
 
                 break;
             case BLUETOOTH:
+                if(req == 1){
+                    processRules(inString);
+                    Log.d("aaaa","req = " + req + " : " + inString);
+                }else if(req == 2){
+                    Log.d("aaaa", "req = " + req + " : " + inString);
+                }else if(req == 3){
+                    Log.d("aaaa", "req = " + req + " : " + inString);
+                }else if(req == 4){
+                    Log.d("aaaa", "req = " + req + " : " + inString);
+                }
+
+                req ++;
+                requestAll(req);
 
                 break;
             case SENSOR:
