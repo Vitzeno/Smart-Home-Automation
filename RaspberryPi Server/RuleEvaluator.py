@@ -6,6 +6,7 @@ from SensorList import SensorList
 class RuleEvaluator(object):
 
     ruleList = []
+    target = None
 
     '''
     Evaluate a given rule, grammar for rule defined below:
@@ -77,7 +78,12 @@ class RuleEvaluator(object):
     '''
     def parseRule(self, rule):
         sensors = SensorList().getSensorObject()
-        print(sensors.getSensorByID(1).temperature)
+
+        # Set device ID to target
+        if self.target is not None:
+            print("Rule for device {0}" .format(self.target))
+        else:
+            self.target = rule[3]
         
         print("Passing in rule list {0}" .format(rule))
         index = self.getFirstBinOperator(rule)
@@ -94,25 +100,25 @@ class RuleEvaluator(object):
             elif (rule[index] == "GE"):
                 try:
                     self.ruleList.append(Expression().greaterThan(sensors.getSensorByID(rule[index - 2]), int(rule[index - 1])))
+                    print("{0} greater than {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
                 except (ValueError) as e:
                     pass
-                print("{0} greater than {1}" .format(rule[index - 2], rule[index - 1]))
                 if len(rule[index + 1:]) > 0:
                     self.parseRule(rule[index + 1:])
             elif (rule[index] == "LE"):
                 try:
                     self.ruleList.append(Expression().lessThan(sensors.getSensorByID(rule[index - 2]), int(rule[index - 1])))
+                    print("{0} less than {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
                 except (ValueError) as e:
                     pass
-                print("{0} less than {1}" .format(rule[index - 2], rule[index - 1]))
                 if len(rule[index + 1:]) > 0:
                     self.parseRule(rule[index + 1:])
             elif (rule[index] == "EQ"):
                 try:
                     self.ruleList.append(Expression().equalsTo(sensors.getSensorByID(rule[index - 2]), int(rule[index - 1])))
+                    print("{0} equals to {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
                 except (ValueError) as e:
                     pass
-                print("{0} equals to {1}" .format(rule[index - 2], rule[index - 1]))
                 if len(rule[index + 1:]) > 0:
                     self.parseRule(rule[index + 1:])
             elif (rule[index] == "AND"):

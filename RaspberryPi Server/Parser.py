@@ -83,15 +83,24 @@ class Parser:
     '''
     def handleRequest(self, request):
         ruleList = RuleList().getRuleObject()
+        deviceList = DeviceList().getDevicesObject()
+        sensorList = SensorList().getSensorObject()
+        groupList = GroupList().getGroupObject()
 
         if(request[0] == "S"):
-            return("Request sensor {0}" .format(request[-1]))
+            try:
+                return(sensorList.getSensorByID(request[-1]).toStringFormat())
+            except (ValueError) as e:
+                return("Cannot find sensor with id {0}" .format(request[-1]))
         elif(request[0] == "AS"):
-            return("Request all sensor data {0}" .format(request[-1]))
+            return(sensorList.toStringFormat())
         elif(request[0] == "D"):
-            return("Request device {0}" .format(request[-1]))
+            try:
+                return(deviceList.getRuleByID(request[-1]).toStringFormat())
+            except (ValueError) as e:
+                return("Cannot find device with id {0}" .format(request[-1]))
         elif(request[0] == "AD"):
-            return("Request all device data {0}" .format(request[-1]))
+            return(deviceList.toStringFormat())
         elif(request[0] == "R"):
             try:
                 return(ruleList.getRuleByID(request[-1]).toStringFormat())
@@ -100,9 +109,12 @@ class Parser:
         elif(request[0] == "AR"):
             return(ruleList.toStringFormat())
         elif(request[0] == "G"):
-            return("Request group {0}" .format(request[1:]))
+            try:
+                return(groupList.getGroupByID(request[-1]).toStringFormat())
+            except (ValueError) as e:
+                return("Cannot find group with id {0}" .format(request[-1]))
         elif(request[0] == "AG"):
-            return("Request all group data {0}" .format(request[-1]))
+            return(groupList.toStringFormat())
         else:
             raise ParserException("Invalid request")
 

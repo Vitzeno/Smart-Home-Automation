@@ -7,7 +7,7 @@ class Expression:
     comparison: numneric value
     '''
     def equalsTo(self, expressionOne, comparison):
-        if expressionOne.temperature == comparison:
+        if expressionOne.getReading() == comparison:
             return True
         return False
     
@@ -18,7 +18,7 @@ class Expression:
     comparison: numneric value
     '''
     def greaterThan(self, expressionOne, comparison):
-        if expressionOne.temperature > comparison:
+        if expressionOne.getReading() > comparison:
             return True
         return False
     
@@ -29,7 +29,7 @@ class Expression:
     comparison: numneric value
     '''
     def lessThan(self, expressionOne, comparison):
-        if expressionOne.temperature < comparison:
+        if expressionOne.getReading() < comparison:
             return True
         return False
 
@@ -40,7 +40,7 @@ class Expression:
     expressionTwo: sensor
     '''
     def equalsToExpr(self, expressionOne, expressionTwo):
-        if expressionOne.temperature == expressionTwo.temperature:
+        if expressionOne.getReading() == expressionTwo.getReading():
             return True
         return False
     
@@ -51,7 +51,7 @@ class Expression:
     expressionTwo: sensor
     '''
     def greaterThanExpr(self, expressionOne, expressionTwo):
-        if expressionOne.temperature > expressionTwo.temperature:
+        if expressionOne.getReading() > expressionTwo.getReading():
             return True
         return False
 
@@ -62,7 +62,7 @@ class Expression:
     expressionTwo: sensor
     '''
     def lessThanExpr(self, expressionOne, expressionTwo):
-        if expressionOne.temperature < expressionTwo.temperature:
+        if expressionOne.getReading() < expressionTwo.getReading():
             return True
         return False
     

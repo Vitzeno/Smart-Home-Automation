@@ -101,8 +101,10 @@ if __name__ == '__main__':
     ruleList = RuleList().getRuleObject()
     #print(ruleList.toStringFormat())
 
-    #eval = RuleEvaluator()
-    #eval.parseRule(ruleList.getRuleByID(1).rule)
+    eval = RuleEvaluator()
+    eval.parseRule(ruleList.getRuleByID(1).rule)
+
+    #parser.parseInput("C:R:C:2:0:2:EQ:0:2:GE:AND")
 
     #print(parser.parseInput("R:AR"))
     #print(parser.parseInput("R:R:3"))

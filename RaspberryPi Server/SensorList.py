@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import Serialise as Serialise
 from Sensor import Sensor
+from TimeSensor import TimeSensor
 
 
 def Singleton(cls):
@@ -39,6 +40,15 @@ class SensorList(object):
         self.counter += 1
         sensor = Sensor(self.counter, name, time, temperature, humidity)
         self.sensorList.append(sensor)
+    
+    '''
+    Adds the default time senesor to sensor list
+
+    name: name of sensor
+    '''
+    def addTimeSensor(self, name):
+        time = TimeSensor(0, name)
+        self.sensorList.append(time)
 
     '''    
     Since the constructor cannot be called agiain in a singleton, this method sets up the default
@@ -47,6 +57,7 @@ class SensorList(object):
     '''
     def setUpDefaultData(self):
         print("Add default sensor data to object")
+        self.addTimeSensor("Time")
         try:
             sensors = self.requestAllData()
             

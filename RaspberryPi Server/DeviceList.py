@@ -79,6 +79,20 @@ class DeviceList(object):
             Serialise.serialiseObjectToFile(self, self.FILE_NAME, self.FILE_DIR)
         except (IOError, OSError, FileNotFoundError) as e:
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
+
+        '''
+    Search for a device object by ID, possible that ID and list index are the same
+
+    If it fails it will raise a ValueError exception
+    '''
+    def getDeviceByID(self, id):
+        if int(id) > int(self.counter):
+            raise ValueError("ID not in range")
+        for device in self.devicesList:
+            if int(device.id) == int(id):
+                return device
+        
+        raise ValueError("ID not found in list")
     
     '''
     Converts object to sting

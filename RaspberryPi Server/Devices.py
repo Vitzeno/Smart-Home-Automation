@@ -21,5 +21,5 @@ class Devices(object):
     return: string representaion of device
     '''
     def toStringFormat(self):
-        return "Name: " + str(self.name) + " ID: " + str(self.id) + " State: " + str(self.lastKnownState)
+        return "Name: " + str(self.name) + " ID: " + str(self.id) + " State: " + str(self.lastKnownState) + " "
         

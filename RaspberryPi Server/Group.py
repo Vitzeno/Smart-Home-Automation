@@ -40,7 +40,7 @@ class Group(object):
     return: string represntation of object
     '''
     def toStringFormat(self):
-        return "Name: " + str(self.name) + " ID: " + str(self.id) + " Devices: " + str(self.devices)
+        return "Name: " + str(self.name) + " ID: " + str(self.id) + " Devices: " + str(self.devices) + " "
     
     '''
     Prints all devicecs in a group to console [DEBUG]
