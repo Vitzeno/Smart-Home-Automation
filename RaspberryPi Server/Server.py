@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
     #parser.parseInput("C:R:C:3:0:1:LE")
     try:
-        parser.parseInput("C:R:E:2:Edited Rule")
+        parser.parseInput("C:G:S:7:1")
     except (ParserException) as e:
         print(e)
 

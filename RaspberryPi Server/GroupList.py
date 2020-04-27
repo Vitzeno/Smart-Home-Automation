@@ -28,7 +28,7 @@ class GroupList(object):
     name: group name
     deivces: devices list
     '''
-    def createGroup(self, name, devices):
+    def createGroup(self, name, devices=[]):
         self.counter += 1
         group = Group(self.counter, name, devices)
         self.groupList.append(group)

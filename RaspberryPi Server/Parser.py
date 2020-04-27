@@ -85,12 +85,34 @@ class Parser:
     Handles group or raises a ParserException
     '''     
     def handleGroups(self, group):
+        groupList = GroupList().getGroupObject()
+        deviceList = DeviceList().getDevicesObject()
+
         if(group[0] == "C"):
-            print("Create group {0} with devices {1}" .format(group[1], group[2:]))
+            try:
+                print("Create group named {0} with devices {1}" .format(group[1], group[2:]))
+                toAdd = []
+                for i in group[2:]:
+                    toAdd.append(deviceList.getDeviceByID(i))
+                groupList.createGroup(str(group[1]), toAdd)
+                groupList.setGroupObject()
+            except (ValueError) as e:
+                print(e)
         elif(group[0] == "D"):
-            print("Delete group {0}" .format(group[1]))
+            try:
+                print("Delete group with ID {0}" .format(group[1]))
+                toRemove = groupList.getGroupByID(group[1])
+                groupList.groupList.remove(toRemove)
+                groupList.setGroupObject()
+            except (ValueError) as e:
+                print(e)
         elif(group[0] == "S"):
-            print("Switch group {0} " .format(group[1]))
+            try:
+                print("Switch group {0} " .format(group[1]))
+                toSwitch = groupList.getGroupByID(group[1])
+                toSwitch.switchAll(bool(int(group[2])))
+            except (ValueError) as e:
+                print(e)
         else:
             raise ParserException("Invalid group command")
 
