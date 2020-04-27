@@ -26,4 +26,4 @@ class TimeSensor(Devices):
     return: string representaion of object
     '''
     def toStringFormat(self):
-        return "{Name: " + str(self.name) + " ID: " + str(self.id) + " Time: " + str(self.time) + "} "
+        return "(Name: " + str(self.name) + " ID: " + str(self.id) + " Time: " + str(self.time) + ") "

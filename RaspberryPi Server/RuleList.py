@@ -30,9 +30,9 @@ class RuleList(object):
     name: name of rule
     rule: list containing rule
     '''
-    def createRule(self, name, rule, parsableRule):
+    def createRule(self, name, rule, parsableRule, state = True):
         self.counter += 1
-        rule = Rule(self.counter, name, rule, parsableRule)
+        rule = Rule(self.counter, name, rule, parsableRule, state)
         self.ruleList.append(rule)
     
     '''
@@ -40,8 +40,8 @@ class RuleList(object):
     '''
     def setUpDefaultData(self):
         print("Add default data to object")
-        self.createRule("Rule One", ("C:R:C:2:0:2:EQ:0:2:GE:AND").split(":"), ("C:R:C:2:0:2:EQ:0:2:GE:AND").split(":")[4:])
-        self.createRule("Rule Two", ("C:R:C:3:0:1:LE").split(":"), ("C:R:C:3:0:1:LE").split(":")[4:])
+        self.createRule("Rule One", ("C:R:C:2:1:0:2:EQ:0:2:GE:AND").split(":"), ("C:R:C:2:1:0:2:EQ:0:2:GE:AND").split(":")[5:], True)
+        self.createRule("Rule Two", ("C:R:C:3:0:0:1:LE").split(":"), ("C:R:C:3:0:0:1:LE").split(":")[5:], True)
         self.counter = 2
 
     '''

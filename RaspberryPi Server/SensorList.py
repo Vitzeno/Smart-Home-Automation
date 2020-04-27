@@ -72,6 +72,35 @@ class SensorList(object):
         except (IOError, OSError, FileNotFoundError) as e:
             self.addSensor("sensor")
 
+    '''
+    Update tempreture for each sensor in senor list when called
+
+    This method requires a connection to the emonHub server to function, must wrap in try catch block
+    '''
+    def updateSensors(self):
+        print("Updateing tempreture and time")
+        try:
+            sensors = self.requestAllData()
+            values = list(sensors.values())
+            '''
+            print(values)
+            print(type(values))
+            print(list(values[0]))
+            print(list(values[0])[1])
+            print(values[0][1])
+            '''
+
+            for i in range(1, len(values)):
+                if i == 0:
+                    continue
+                self.sensorList[i].time = values[i][0]
+                self.sensorList[i].temperature = values[i][1]
+                self.sensorList[i].humidity = values[i][2]
+
+                
+        except(IOError, OSError, FileNotFoundError, ValueError, KeyError, IndexError) as e:
+            print("Failed to update sensors, make sure emonHub is running")
+
 
     '''
     Init the sensor list JSON file and write to disk, default parameters are used

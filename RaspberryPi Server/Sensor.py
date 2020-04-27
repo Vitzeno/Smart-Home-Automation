@@ -20,4 +20,4 @@ class Sensor(Devices):
     return: string representaion of object
     '''
     def toStringFormat(self):
-        return "{Name: " + str(self.name) + " ID: " + str(self.id) + " Temp: " + str(self.temperature) + " Time: " + str(self.time) + "} "
+        return "(Name: " + str(self.name) + " ID: " + str(self.id) + " Temp: " + str(self.temperature) + " Time: " + str(self.time) + ") "

@@ -23,43 +23,43 @@ class RuleEvaluator(object):
     '''
     def evaluate(self, expressions = []):
         evaluated = []
-        print()
-        print("Start: {0}" .format(expressions))
+        #print()
+        #print("Start: {0}" .format(expressions))
         i = self.getFirstOccurance(expressions)
 
         # Handle singular expressions
         if len(expressions) == 1:
-            print("RETURN: {0}" .format(expressions[0]))
+            #print("RETURN: {0}" .format(expressions[0]))
             return expressions[0]
 
         # Base case of recursive function
         if len(expressions) <= 3:
             if expressions[i] == "AND":
-                print("RETURN: {0}" .format(self.evaluateAnd(expressions[i - 1], expressions[i - 2])))
+                #print("RETURN: {0}" .format(self.evaluateAnd(expressions[i - 1], expressions[i - 2])))
                 return self.evaluateAnd(expressions[i - 1], expressions[i - 2])
             elif expressions[i] == "OR":
-                print("RETURN: {0}" .format(self.evaluateOr(expressions[i - 1], expressions[i - 2])))
+                #print("RETURN: {0}" .format(self.evaluateOr(expressions[i - 1], expressions[i - 2])))
                 return self.evaluateOr(expressions[i - 1], expressions[i - 2])
             elif expressions[i] == "NOT":
-                print("RETURN: {0}" .format(self.evaluateNot(expressions[i])))
+                #print("RETURN: {0}" .format(self.evaluateNot(expressions[i])))
                 return self.evaluateNot(expressions[i])
             else:
-                print("Invalid operator")
+                #print("Invalid operator")
                 return None
         elif expressions[i] == "AND":
             newExpression = self.evaluateAnd(expressions[i - 1], expressions[i - 2])
-            print("Evaluating: {0}, {1} AND to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
+            #print("Evaluating: {0}, {1} AND to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
             del expressions[i - 2:i + 1]
             expressions.insert(i - 2, newExpression)
-            print("Passing: {0}" .format(expressions))
+            #print("Passing: {0}" .format(expressions))
         elif expressions[i] == "OR":
             newExpression = self.evaluateOr(expressions[i - 1], expressions[i - 2])
-            print("Evaluating: {0}, {1} OR to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
+            #print("Evaluating: {0}, {1} OR to {2}" .format(expressions[i - 1], expressions[i - 2], newExpression))
             del expressions[i - 2 :i + 1]
             expressions.insert(i - 2, newExpression)
-            print("Passing: {0}" .format(expressions))  
+            #print("Passing: {0}" .format(expressions))  
         else:
-            print("Invalid operator")
+            #print("Invalid operator")
             return None
 
         return self.evaluate(expressions)
@@ -79,9 +79,9 @@ class RuleEvaluator(object):
     def parseRule(self, rule):
         sensors = SensorList().getSensorObject()
         
-        print("Passing in rule list {0}" .format(rule))
+        #print("Passing in rule list {0}" .format(rule))
         index = self.getFirstBinOperator(rule)
-        print("Operator {0} at index: {1}" .format(rule[index], index))
+        #print("Operator {0} at index: {1}" .format(rule[index], index))
         try:
             # Handling base case of recursive function
             if len(rule) == 1:
@@ -94,7 +94,7 @@ class RuleEvaluator(object):
             elif (rule[index] == "GE"):
                 try:
                     self.ruleList.append(Expression().greaterThan(sensors.getSensorByID(rule[index - 2]), int(rule[index - 1])))
-                    print("{0} greater than {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
+                    #print("{0} greater than {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
                 except (ValueError) as e:
                     pass
                 if len(rule[index + 1:]) > 0:
@@ -102,7 +102,7 @@ class RuleEvaluator(object):
             elif (rule[index] == "LE"):
                 try:
                     self.ruleList.append(Expression().lessThan(sensors.getSensorByID(rule[index - 2]), int(rule[index - 1])))
-                    print("{0} less than {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
+                    #print("{0} less than {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
                 except (ValueError) as e:
                     pass
                 if len(rule[index + 1:]) > 0:
@@ -110,7 +110,7 @@ class RuleEvaluator(object):
             elif (rule[index] == "EQ"):
                 try:
                     self.ruleList.append(Expression().equalsTo(sensors.getSensorByID(rule[index - 2]), int(rule[index - 1])))
-                    print("{0} equals to {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
+                    #print("{0} equals to {1}" .format(sensors.getSensorByID(rule[index - 2]).getReading(), rule[index - 1]))
                 except (ValueError) as e:
                     pass
                 if len(rule[index + 1:]) > 0:
