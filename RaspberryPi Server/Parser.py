@@ -113,6 +113,14 @@ class Parser:
                 toSwitch.switchAll(bool(int(group[2])))
             except (ValueError) as e:
                 print(e)
+        elif(group[0] == "E"):
+            try:
+                print("Rename group with ID {0} to {1}" .format(group[1], group[2]))
+                toEdit = groupList.getGroupByID(group[1])
+                toEdit.name = str(group[2])
+                groupList.setGroupObject()
+            except (ValueError) as e:
+                print(e)
         else:
             raise ParserException("Invalid group command")
 

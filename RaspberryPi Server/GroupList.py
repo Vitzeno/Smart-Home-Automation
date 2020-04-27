@@ -89,7 +89,7 @@ class GroupList(object):
     def toStringFormat(self):
         allGroups = ""
         for i in self.groupList:
-            allGroups = allGroups = i.toStringFormat()
+            allGroups = allGroups + i.toStringFormat()
         return allGroups
 
     '''

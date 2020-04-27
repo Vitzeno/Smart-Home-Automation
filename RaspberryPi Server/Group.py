@@ -26,6 +26,16 @@ class Group(object):
         self.devices.extend(devices)
     
     '''
+    Returns string format of all deivces in list [DEBUG]
+    '''
+    def devicesToString(self):
+        toReturn = "[]"
+        for device in self.devices:
+            toReturn = toReturn + "[Name: " + str(device.id) + " ID: " + str(device.name) + "] "
+
+        return toReturn
+
+    '''
     Switch all deives in this group to a given state using eacg devices switch methis
 
     state: state to switch to
@@ -40,7 +50,7 @@ class Group(object):
     return: string represntation of object
     '''
     def toStringFormat(self):
-        return "Name: " + str(self.name) + " ID: " + str(self.id) + " Devices: " + str(self.devices) + " "
+        return "{Name: " + str(self.name) + " ID: " + str(self.id) + " Devices: " + str(self.devicesToString()) + "} "
     
     '''
     Prints all devicecs in a group to console [DEBUG]
