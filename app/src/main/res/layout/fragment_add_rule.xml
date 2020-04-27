@@ -112,7 +112,11 @@
             android:layout_marginRight="20dp"
             android:background="@color/colorItems"
             android:ems="10"
+            android:gravity="center"
+            android:hint="15"
             android:inputType="number"
+            android:maxLength="3"
+            android:text="15"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/Type" />
 
@@ -126,7 +130,7 @@
             android:background="@color/colorItems"
             android:clickable="true"
             android:gravity="center"
-            android:text="Pick Time"
+            android:text="00:00"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/Type" />
 

@@ -112,6 +112,7 @@ public class AddRuleFragment extends Fragment
             devices.setAdapter(deviceAdapter);
             sen.setAdapter(valAdapter);
             type.setAdapter(typeAdapter);
+            temp.setText("15");
             op.setAdapter(opAdapter);
             multi.setAdapter(multiAdapter);
 
@@ -197,8 +198,8 @@ public class AddRuleFragment extends Fragment
                 }
                 else if(type.getSelectedItem().toString() == "Temperature")
                 {
-                    value = ":" + temp.getText().toString();
-                    sensor = ":" + sen.getSelectedItem().toString();
+                    value = ":" + (temp.getText().toString().isEmpty() ? "15" : temp.getText().toString());
+                    sensor =":" + sen.getSelectedItem().toString();
                 }
 
                 String operator = ":" + op.getSelectedItem().toString();
@@ -210,7 +211,7 @@ public class AddRuleFragment extends Fragment
                 }
                 Log.d("aaaa",type.getSelectedItem().toString());
                 if(type.getSelectedItem().toString() == "Time")
-                    updateUserStr(device + additional + ":Time" + operator + value);
+                    updateUserStr(device + additional + ":Time" + operator + ":" + time.getText().toString());
                 else if(type.getSelectedItem().toString() == "Temperature")
                     updateUserStr(device + additional + sensor + operator + value);
 

@@ -33,8 +33,10 @@ import com.google.android.material.navigation.NavigationView;
 
 import org.w3c.dom.Text;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -240,6 +242,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public void populateSensorView(){
+
+        sensorAdaptor = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, sensorList);
+        sensorAdaptor.notifyDataSetChanged();
+
+        snfm = (SensorFragment) fm.findFragmentByTag("SenFrag");
+        Log.d("aaaa", "Populate!");
+        if(snfm != null){
+            snfm.updatelist();
+            Log.d("aaaa", "update sent");
+        }
+    }
+    public void populateObjView(){
+
+        ObjAdaptor = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, ObjList);
+        ObjAdaptor.notifyDataSetChanged();
+
+        dvfm = (DeviceFragment) fm.findFragmentByTag("DevFrag");
+        Log.d("aaaa", "Populate!");
+        if(dvfm != null){
+            dvfm.updatelist();
+            Log.d("aaaa", "update sent");
+        }
+    }
+
 
     private void clearBTList(){
         listOfDevices.clear();              //clear the existing lists
@@ -280,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.btnOn:
                 outStringBuff.setLength(0);
-                outStringBuff.append('H');
+                outStringBuff.append("C:D:S:1:1");
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
 
@@ -288,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.btnOff:
                 outStringBuff.setLength(0);
-                outStringBuff.append('L');
+                outStringBuff.append("C:D:S:1:0");
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
                 break;
@@ -297,12 +324,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddRuleFragment(), "AddRule").addToBackStack(null).commit();
                 break;
 
-            /*case R.id.btnSOS:
-                outStringBuff.setLength(0);
-                outStringBuff.append('S');
-                send = outStringBuff.toString().getBytes();
-                BTservice.write(send);
-                break;*/
             default:
                 throw new RuntimeException("Unknown button ID");
 
@@ -317,6 +338,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onClickRuleFragOP(View v){
         RuleFragment rf = (RuleFragment) fm.findFragmentByTag("RulFrag");
         rf.onClickOp(v);
+    }public void onClickSenFragOP(View v){
+        SensorFragment sf = (SensorFragment) fm.findFragmentByTag("SenFrag");
+        sf.onClickOp(v);
+    }public void onClickObjFragOP(View v){
+        DeviceFragment df = (DeviceFragment) fm.findFragmentByTag("DevFrag");
+        df.onClickOp(v);
     }
 
     @Override
@@ -471,14 +498,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //Log.d("aaaa", "match: " + m.group());
 
             String[] pairs = m.group().split("Rule: ");
-            //Log.d("aaaa",Arrays.toString(pairs));
+            Log.d("aaaa",Arrays.toString(pairs));
 
             String id = pairs[0].substring(4);
+            String dev = pairs[1].split(":")[3];
             String rule =  pairs[1].substring(1, pairs[1].length() -1);
-            Log.d("aaaa","ID: " + id + "rule: " + rule);
-
-            String format = convertRules(rule);
-            format = writeUserRule(id, format);
+            String formatRule = rule.substring(0, rule.indexOf(dev)) + rule.substring(rule.indexOf(dev) + dev.length() +1);
+            Log.d("aaaa","ID: " + id +"Dev: " + dev +" rule: " + rule);
+            Log.d("aaaa","fR = " + formatRule);
+            String format = convertRules(formatRule);
+            format = writeUserRule(id, dev ,format);
 
             Log.d("aaaa","converted: " + format);
             ruleIDList.add(id);
@@ -533,8 +562,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return ret;
     }
-    private String writeUserRule(String id, String str){
+    private String writeUserRule(String id, String dev,  String str){
         String ret;
+
         if(str != null) {
             Log.d("aaaa", "userstr : " + str);
             str = str.replace("GE", "Greater Than");
@@ -547,11 +577,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             str = "Null String";
         }
 
-        ret = "ID: " + id + " {" + str + "}";
+        ret = "ID: " + id + "Device: " + dev + " {" + str + "}";
 
         return ret;
     }
 
+    private void processSensors(String inString){
+        //{Name: Time ID: 0 Time: 0} Name: emonth6 ID: 1 Temp: 19.9 Time: 1587916150 Name: emonth8 ID: 2 Temp: 19.8 Time: 1587916148 Name: emonth7 ID: 3 Temp: 19.8 Time: 1587916161
+        String str = inString;
+        sensorAdaptor = null;
+        sensorList.clear();
+        sensorIDList.clear();
+        listOfSensors.clear();
+
+        Matcher m = Pattern.compile("\\((.*?)\\)").matcher(str);
+        while(m.find()){
+            String id = "";
+            String name = "";
+            String val = "";
+            String time = "";
+            String[] elements;
+
+            elements = m.group().split("\\s+");
+            //Log.d("aaaa", "ele = " + Arrays.toString(elements));
+            id = elements[3];
+            //Log.d("aaaa","id:" + id);
+            Calendar c = Calendar.getInstance();
+            if(id.equals("0")){
+                name = "Time sensor";
+                time = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
+            }
+            else{
+                name = elements[1];
+                id = elements[3];
+                val = elements[5];
+                time = elements[7].substring(0, elements[7].length() -1);
+                c.setTimeInMillis(Long.valueOf(time)*1000);
+                time = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
+            }
+
+            String sensor = "Sensor " + id + "} "+ name + " Temp: " + val + " at: " + time;
+            Log.d("aaaa", "Sen = " + name + " id: " + id + " val: " + val + " Time: " + time);
+
+            sensorList.add(sensor);
+            sensorIDList.add(id);
+            listOfSensors.put(id, sensor);
+        }
+    }
     private void processInput(String inString){
         switch(fragState){
             case RULE:
@@ -564,6 +636,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     processRules(inString);
                     Log.d("aaaa","req = " + req + " : " + inString);
                 }else if(req == 2){
+                    processSensors(inString);
                     Log.d("aaaa", "req = " + req + " : " + inString);
                 }else if(req == 3){
                     Log.d("aaaa", "req = " + req + " : " + inString);
@@ -576,7 +649,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
             case SENSOR:
-
+                processSensors(inString);
+                populateSensorView();
                 break;
             case DEVICE:
 
