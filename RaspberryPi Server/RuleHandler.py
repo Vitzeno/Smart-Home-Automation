@@ -13,6 +13,12 @@ class RuleHandler():
 
     currentTagret = None
 
+    '''
+    Separate thread
+
+    Loops through all rules and evaluates them using the RuleEvaluator class, if a rule evaluates to True
+    the target decive is turned on. Target devices are tied to each rule.
+    '''
     @classmethod
     def beginEvaluation(cls):
         while True:

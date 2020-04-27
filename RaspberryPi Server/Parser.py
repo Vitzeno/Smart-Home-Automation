@@ -1,3 +1,5 @@
+import Radio as Radio
+
 from Expression import Expression
 from RuleEvaluator import RuleEvaluator
 from RuleList import RuleList
@@ -45,10 +47,37 @@ class Parser:
     Handles devices or raises a ParserException
     '''
     def handleDevices(self, device):
-        if(device[0] == "E"):
-            print("Edit deivice {0}" .format(device[1:]))
+        deviceList = DeviceList().getDevicesObject()
+
+        if(device[0] == "C"):
+            try:
+                print("Create deivice named {0}" .format(device[1]))
+                deviceList.addDevice(str(device[1]))
+                deviceList.setDevicesObject()
+            except (ValueError) as e:
+                print(e)
         elif(device[0] == "S"):
-            print("Switch deivice {0}" .format(device[1:]))
+            try:
+                print("Switch deivice {0} to {1}" .format(device[1], device[2]))
+                Radio.switchSocket(device[1], bool(int(device[2])))
+            except (ValueError) as e:
+                print(e)
+        elif(device[0] == "D"):
+            try:
+                print("Delete Device with ID: {0}" .format(device[1]))
+                toRemove = deviceList.getDeviceByID(device[1])
+                deviceList.devicesList.remove(toRemove)
+                deviceList.setDevicesObject()
+            except (ValueError) as e:
+                print(e)
+        elif(device[0] == "E"):
+            try:
+                print("Rename devie with ID {0} to {1}" .format(device[1], device[2]))
+                toEdit = deviceList.getDeviceByID(device[1])
+                toEdit.name = str(device[2])
+                deviceList.setDevicesObject()
+            except (ValueError) as e:
+                print(e)
         else:
             raise ParserException("Invalid device command")
     
@@ -61,7 +90,7 @@ class Parser:
         elif(group[0] == "D"):
             print("Delete group {0}" .format(group[1]))
         elif(group[0] == "S"):
-            print("Switch group {0} " .format(group[1:]))
+            print("Switch group {0} " .format(group[1]))
         else:
             raise ParserException("Invalid group command")
 
@@ -69,12 +98,28 @@ class Parser:
     Handles rule or raises a ParserException
     '''
     def handleRule(self, rule):
+        ruleList = RuleList().getRuleObject()
+
         if(rule[0] == "C"):
             self.ruleList = []
             self.isValidPostFixNotation(rule)
             self.createRule(rule[1:])
         elif(rule[0] == "D"):
-            print("Delete rule {0}" .format(rule[1:]))
+            try:
+                print("Delete rule ID {0}" .format(rule[1]))
+                toRemove = ruleList.getRuleByID(rule[1])
+                ruleList.ruleList.remove(toRemove)
+                ruleList.setRuleObject()
+            except (ValueError) as e:
+                print(e)  
+        elif(rule[0] == "E"):
+            try:
+                print("Rename rule with ID {0} to {1}" .format(rule[1], rule[2]))
+                toEdit = ruleList.getRuleByID(rule[1])
+                toEdit.name = str(rule[2])
+                ruleList.setRuleObject()
+            except (ValueError) as e:
+                print(e) 
         else:
             raise ParserException("Invalid rule")
     
@@ -139,5 +184,3 @@ class Parser:
 
         print("Created rule {0}" .format(self.input.split(":")))
     
-
-## Update protocol to allow rules to be entered

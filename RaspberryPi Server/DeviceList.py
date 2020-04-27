@@ -38,7 +38,7 @@ class DeviceList(object):
     def setUpDefaultData(self):
         print("Add default data to object")
         self.addDevice("Device One")
-        self.addDevice("Device Twp")
+        self.addDevice("Device Two")
         self.addDevice("Device Three")
         self.addDevice("Device Four")
         self.counter = 4

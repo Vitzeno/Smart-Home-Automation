@@ -105,7 +105,11 @@ if __name__ == '__main__':
     #eval = RuleEvaluator()
     #print("Server Evaluated to: {0}" .format(eval.parseRule(ruleList.getRuleByID(3).rule)))
 
-    #parser.parseInput("C:R:C:2:0:2:EQ:0:2:GE:AND")
+    #parser.parseInput("C:R:C:3:0:1:LE")
+    try:
+        parser.parseInput("C:R:E:2:Edited Rule")
+    except (ParserException) as e:
+        print(e)
 
     #print(parser.parseInput("R:AR"))
     #print(parser.parseInput("R:R:3"))
