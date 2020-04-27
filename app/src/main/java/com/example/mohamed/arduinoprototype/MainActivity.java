@@ -502,12 +502,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             String id = pairs[0].substring(4);
             String dev = pairs[1].split(":")[3];
+            String state = pairs[1].split(":")[4];
             String rule =  pairs[1].substring(1, pairs[1].length() -1);
-            String formatRule = rule.substring(0, rule.indexOf(dev)) + rule.substring(rule.indexOf(dev) + dev.length() +1);
-            Log.d("aaaa","ID: " + id +"Dev: " + dev +" rule: " + rule);
-            Log.d("aaaa","fR = " + formatRule);
+            String formatRule = rule.substring(0, rule.indexOf(dev)) + rule.substring(rule.indexOf(dev) + dev.length() +1 + state.length() +1);
+            //Log.d("aaaa","ID: " + id +"Dev: " + dev +" rule: " + rule);
+            //Log.d("aaaa","fR = " + formatRule);
             String format = convertRules(formatRule);
-            format = writeUserRule(id, dev ,format);
+            format = writeUserRule(id, dev, state ,format);
 
             Log.d("aaaa","converted: " + format);
             ruleIDList.add(id);
@@ -562,7 +563,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return ret;
     }
-    private String writeUserRule(String id, String dev,  String str){
+    private String writeUserRule(String id, String dev, String state, String str){
         String ret;
 
         if(str != null) {
@@ -577,7 +578,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             str = "Null String";
         }
 
-        ret = "ID: " + id + "Device: " + dev + " {" + str + "}";
+        ret = "ID: " + id + "Device: " + dev + "State: "+ state +" {" + str + "}";
 
         return ret;
     }

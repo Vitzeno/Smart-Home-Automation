@@ -151,9 +151,21 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Device:"
+            android:textSize="18dp"
             app:layout_constraintEnd_toStartOf="@+id/Device"
             app:layout_constraintHorizontal_bias="0.956"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/ruleState"
+            android:layout_width="86dp"
+            android:layout_height="31dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorButton"
+            android:text="On"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/Device"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

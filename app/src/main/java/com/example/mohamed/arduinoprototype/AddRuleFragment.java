@@ -35,6 +35,7 @@ public class AddRuleFragment extends Fragment
     private Spinner sen,type,op, multi, devices;
     private TextView time;
     private EditText temp;
+    private Button stateSwitch;
     private String [] vals = {"1","2","3","4","5","6","7","8","9"};
     private String [] types = {"Time", "Temperature"};
     private String [] ops = {"LE","GE","EQ"};
@@ -42,7 +43,7 @@ public class AddRuleFragment extends Fragment
     private long timeval;
 
     public int rulecount = 0;
-
+    private int ruleState = 1;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class AddRuleFragment extends Fragment
         commandLn = getView().findViewById(R.id.commandLine);
         rulecount = 0;
 
+        stateSwitch = view.findViewById(R.id.ruleState);
         type = view.findViewById(R.id.Type);
         devices = view.findViewById(R.id.Device);
         sen = view.findViewById(R.id.Sen);
@@ -187,7 +189,7 @@ public class AddRuleFragment extends Fragment
             case R.id.ADD:
                 String value = "";
                 String sensor = "";
-
+                String state = ":" + ruleState;
                 String device = "";
                 device = ":" + devices.getSelectedItem().toString();
 
@@ -211,9 +213,9 @@ public class AddRuleFragment extends Fragment
                 }
                 Log.d("aaaa",type.getSelectedItem().toString());
                 if(type.getSelectedItem().toString() == "Time")
-                    updateUserStr(device + additional + ":Time" + operator + ":" + time.getText().toString());
+                    updateUserStr(device +":"+ stateSwitch.getText() + ":" + additional + ":Time" + operator + ":" + time.getText().toString());
                 else if(type.getSelectedItem().toString() == "Temperature")
-                    updateUserStr(device + additional + sensor + operator + value);
+                    updateUserStr(device +":"+ stateSwitch.getText() + ":" + additional + sensor + operator + value);
 
                 //val.setAdapter(null);
                 sen.setAdapter(null);
@@ -223,7 +225,7 @@ public class AddRuleFragment extends Fragment
 
                 rulecount++;
 
-                updateStr(device + sensor + value + operator + additional);
+                updateStr(device + state + sensor + value + operator + additional);
 
                 Reset(clear.PARTIAL);
                 break;
@@ -232,6 +234,10 @@ public class AddRuleFragment extends Fragment
                 Log.d("aaaa","Clearing box");
                 Reset(clear.FULL);
                 break;
+            case R.id.ruleState:
+                ruleState = (ruleState == 1)? 0 : 1;
+                String t = (ruleState == 1) ? "On" : "Off";
+                stateSwitch.setText(t);
             case R.id.Send:
                 if(rulecount > 0) {
                     Log.d("aaaa", "Attempting to send");

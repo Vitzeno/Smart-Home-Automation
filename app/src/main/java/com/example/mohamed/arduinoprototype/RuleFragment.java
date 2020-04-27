@@ -131,7 +131,7 @@ public class RuleFragment extends Fragment
                 */
                 TextView rule = (TextView) view.findViewById(R.id.txtName);
                 String tmp = rule.getText().toString();
-                String id = tmp.substring(tmp.indexOf("ID: ") +4, tmp.indexOf(" {"));
+                String id = tmp.substring(tmp.indexOf("ID: ") +4, tmp.indexOf(" Device"));
                 Log.d("aaaa","Pressed!" + id);
 
                 if(delete) {
