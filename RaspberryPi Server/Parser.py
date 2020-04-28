@@ -60,6 +60,9 @@ class Parser:
             try:
                 print("Switch deivice {0} to {1}" .format(device[1], device[2]))
                 Radio.switchSocket(device[1], bool(int(device[2])))
+                toSwitch = deviceList.getDeviceByID(device[1])
+                toSwitch.lastKnownState = bool(int(device[2]))
+                deviceList.setDevicesObject()
             except (ValueError) as e:
                 print(e)
         elif(device[0] == "D"):
@@ -209,7 +212,7 @@ class Parser:
     '''
     def createRule(self, rule):
         ruleList = RuleList().getRuleObject()
-        ruleList.createRule("", self.input.split(":"), self.input.split(":")[4:])
+        ruleList.createRule("", self.input.split(":"), self.input.split(":")[5:])
         ruleList.setRuleObject()
 
         print("Created rule {0}" .format(self.input.split(":")))

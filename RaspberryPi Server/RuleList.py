@@ -40,9 +40,8 @@ class RuleList(object):
     '''
     def setUpDefaultData(self):
         print("Add default data to object")
-        self.createRule("Rule One", ("C:R:C:2:1:0:2:EQ:0:2:GE:AND").split(":"), ("C:R:C:2:1:0:2:EQ:0:2:GE:AND").split(":")[5:])
-        self.createRule("Rule Two", ("C:R:C:3:0:0:1:LE").split(":"), ("C:R:C:3:0:0:1:LE").split(":")[5:])
-        self.counter = 2
+        self.createRule("Rule_One", ("C:R:C:1:1:2:2:EQ").split(":"), ("C:R:C:1:1:2:2:EQ").split(":")[5:])
+        self.counter = 1
 
     '''
     Init the rule list JSON file and write to disk, default parameters are used

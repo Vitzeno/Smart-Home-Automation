@@ -36,12 +36,13 @@ class RuleHandler():
                     ruleEval = RuleEvaluator()
                     currentRule = ruleList.getRuleByID(i)
                     print("************************************************************************")
-                    print("\n RULE HANDLER THREAD \n")
+                    print("\n RULE {0} HANDLER THREAD \n" .format(i))
                     print("************************************************************************")
 
                     print(sensorList.toStringFormat())
 
                     targetDevice = currentRule.getTarget()
+                    targetDeviceObject = deviceList.getDeviceByID(targetDevice)
                     targetState = currentRule.getState()
                     print("Rule: {0}" .format(currentRule.rule))
                     print("Rule Targeting Device: {0}" .format(targetDevice)) 
@@ -52,7 +53,9 @@ class RuleHandler():
 
                     if bool(state):
                         print("Switching device {0} to {1}" .format(int(targetDevice), bool(targetState)))
+                        targetDeviceObject.lastKnownState = bool(targetState)
                         Radio.switchSocket(int(targetDevice), bool(targetState))
+                        deviceList.setDevicesObject()
 
                 except (ValueError) as e:
                     print("Rule with ID {0} not in rule list" .format(i))

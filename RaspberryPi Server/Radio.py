@@ -76,7 +76,7 @@ def switchSocket(socket, state):
     GPIO.output (16, output[2])
     GPIO.output (13, output[3])
     # let it settle, encoder requires this
-    time.sleep(0.25)	
+    time.sleep(0.1)	
     # Enable the modulator
     GPIO.output (22, True)
     # keep enabled for a period

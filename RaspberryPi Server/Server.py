@@ -76,9 +76,7 @@ def comms():
         ConnectEvent.clear()
         proc.join()
         running = False
-    finally:
-        print("Clean up GPIO pins")
-        #Radio.cleanUp()
+        Radio.cleanUp()
 
     
     EndEvent.set()
@@ -87,6 +85,7 @@ def comms():
     proc.join()
 
 if __name__ == '__main__':
+    
     Radio.setUp()
     Serialise.setDirectory()
 
@@ -118,4 +117,5 @@ if __name__ == '__main__':
     while running:
         comms()
 
+    Radio.cleanUp()
     print("Gracefully Quit")

@@ -2,7 +2,7 @@ import Radio as Radio
 
 class Devices(object):
 
-    def __init__(self, id, name, lastKnownState = 0):
+    def __init__(self, id, name, lastKnownState = True):
         self.id = id
         self.name = name
         self.lastKnownState = lastKnownState
