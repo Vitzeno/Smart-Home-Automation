@@ -6,6 +6,7 @@ import subprocess
 Sets up GPIO pins for usage
 '''
 def setUp():
+    GPIO.setwarnings(False)
     # make bt discoverable
     subprocess.call(['sudo', 'hciconfig', 'hci0', 'piscan'])
 
@@ -87,4 +88,9 @@ def switchSocket(socket, state):
 Cleans up GPIO pins after usage
 '''
 def cleanUp():
-    GPIO.cleanup()
+    GPIO.cleanup(11)
+    GPIO.cleanup(15)
+    GPIO.cleanup(16)
+    GPIO.cleanup(13)
+    GPIO.cleanup(18)
+    GPIO.cleanup(22)

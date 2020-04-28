@@ -41,18 +41,15 @@ def comms():
   
     proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, ConnectEvent, SendEvent, lock))
     proc.start()
-    switch = True                           ##hack for second obj, remove
 
     print(subprocess.getoutput("hcitool con").split())
 
     ConnectEvent.wait()
     conStatus = True
-    #print(type(dictionary["status"]))
-    try:
-        while conStatus: #dictionary["status"]:
 
-            #print(dictionary["name"])
-            #print(subprocess.getoutput("hcitool con").split())
+    try:
+        while conStatus: 
+
             MessageEvent.wait(0.25)
             
             status = subprocess.getoutput("hcitool con").split()
@@ -66,6 +63,8 @@ def comms():
                     data = parser.parseInput(dictionary["recv"].decode("utf-8"))
                     if data is not None:
                         print(data)
+                        if not data:
+                            data = "[Empty List]"
                         dictionary["write"] = data
                         SendEvent.set()
                 except (ParserException) as e:
@@ -76,15 +75,16 @@ def comms():
         EndEvent.set()
         ConnectEvent.clear()
         proc.join()
-        Radio.cleanUp()
         running = False
+    finally:
+        print("Clean up GPIO pins")
+        #Radio.cleanUp()
+
     
-    Radio.cleanUp()
     EndEvent.set()
     ConnectEvent.clear()
     print("Waiting to join")
     proc.join()
-    Radio.cleanUp()
 
 if __name__ == '__main__':
     Radio.setUp()
@@ -105,15 +105,10 @@ if __name__ == '__main__':
     #eval = RuleEvaluator()
     #print("Server Evaluated to: {0}" .format(eval.parseRule(ruleList.getRuleByID(3).rule)))
 
-    #parser.parseInput("C:R:C:3:0:1:LE")
     try:
-        parser.parseInput("R:AG")
+        print(parser.parseInput("R:AR"))
     except (ParserException) as e:
         print(e)
-
-    #print(parser.parseInput("R:AR"))
-    #print(parser.parseInput("R:R:3"))
-    #print(parser.parseInput("R:R:69"))
 
     proc = Process(target = RuleHandler.beginEvaluation)
     proc.start()
@@ -123,5 +118,4 @@ if __name__ == '__main__':
     while running:
         comms()
 
-    Radio.cleanUp()
     print("Gracefully Quit")
