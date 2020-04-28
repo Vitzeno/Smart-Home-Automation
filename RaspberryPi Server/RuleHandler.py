@@ -43,6 +43,7 @@ class RuleHandler():
 
                     targetDevice = currentRule.getTarget()
                     targetState = currentRule.getState()
+                    print("Rule: {0}" .format(currentRule.rule))
                     print("Rule Targeting Device: {0}" .format(targetDevice)) 
                     print("Rule Targeting State: {0}" .format(targetState)) 
 
@@ -50,9 +51,8 @@ class RuleHandler():
                     print("Evalauted to {0} \n" .format(state))
 
                     if bool(state):
-                        print("Switching device {0} to {1}" .format(targetDevice, state))
+                        print("Switching device {0} to {1}" .format(int(targetDevice), bool(targetState)))
                         Radio.switchSocket(int(targetDevice), bool(targetState))
-
 
                 except (ValueError) as e:
                     print("Rule with ID {0} not in rule list" .format(i))

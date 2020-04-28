@@ -106,7 +106,7 @@ if __name__ == '__main__':
     #print("Server Evaluated to: {0}" .format(eval.parseRule(ruleList.getRuleByID(3).rule)))
 
     try:
-        print(parser.parseInput("R:AR"))
+        (parser.parseInput("R:AR"))
     except (ParserException) as e:
         print(e)
 

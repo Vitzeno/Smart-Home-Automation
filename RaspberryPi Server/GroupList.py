@@ -38,10 +38,10 @@ class GroupList(object):
     '''
     def setUpDefaultData(self):
         print("Add default data to object")
-        self.createGroup("Group One", [])
-        self.createGroup("Group Two", [])
-        self.createGroup("Group Three", [])
-        self.createGroup("Group Four", [])
+        self.createGroup("Group_One", [])
+        self.createGroup("Group_Two", [])
+        self.createGroup("Group_Three", [])
+        self.createGroup("Group_Four", [])
         self.counter = 4
     
     '''
