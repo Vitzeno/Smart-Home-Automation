@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public ArrayAdapter<String> ObjAdaptor;
     public ArrayList<String> ObjList = new ArrayList<>();
-    //public ArrayList<String> formattedRules = new ArrayList<>();
+    public ArrayList<String> formattedObjs = new ArrayList<>();
     public ArrayList<String> ObjIDList = new ArrayList<>();
     public HashMap<String,String> listOfObjs = new HashMap<>();
 
@@ -158,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BluetoothFragment(), "BTFrag").addToBackStack(null).commit();
             navView.setCheckedItem(R.id.nav_bluetooth);
         }
+
+        //setStatusBar();
     }
 
     @Override
@@ -256,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     public void populateObjView(){
 
-        ObjAdaptor = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, ObjList);
+        ObjAdaptor = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, formattedObjs);
         ObjAdaptor.notifyDataSetChanged();
 
         dvfm = (DeviceFragment) fm.findFragmentByTag("DevFrag");
@@ -310,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 outStringBuff.append("C:D:S:1:1");
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
-
+                Log.d("aaaa","sending on");
                 break;
 
             case R.id.btnOff:
@@ -318,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 outStringBuff.append("C:D:S:1:0");
                 send = outStringBuff.toString().getBytes();
                 BTservice.write(send);
+                Log.d("aaaa","sending off");
                 break;
 
             case R.id.NewRule:
@@ -402,9 +405,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         unregisterReceiver(receiver);
     }
 
-
+    @Override
     public void onResume() {
         super.onResume();
+        //setStatusBar();
+    }
+
+    public void setStatusBar()
+    {
+        switch(BTservice.getState()){
+            case BTService.STATE_NONE:
+                findViewById(R.id.txtBTStatus).setBackgroundColor(Color.BLACK);
+                break;
+            case BTService.STATE_LISTEN:
+                findViewById(R.id.txtBTStatus).setBackgroundColor(Color.RED);
+                break;
+            case BTService.STATE_CONNECTING:
+                findViewById(R.id.txtBTStatus).setBackgroundColor(Color.YELLOW);
+                break;
+            case BTService.STATE_CONNECTED:
+                findViewById(R.id.txtBTStatus).setBackgroundColor(Color.GREEN);
+                break;
+
+        }
     }
 
     private final Handler mHandler = new Handler() {
@@ -436,30 +459,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     break;
                 case MESSAGE_STATE_CHANGE:
-                    switch (msg.arg1) {
-                        case BTService.STATE_NONE:
-                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.BLACK);
-                            Log.d("Status", "BT None");
-                            break;
-                        case BTService.STATE_LISTEN:
-                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.RED);
-                            Log.d("Status", "BT listening");
-                            req = 0;
-                            break;
-                        case BTService.STATE_CONNECTING:
-                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.YELLOW);
-                            Log.d("Status", "BT Connecting");
-                            break;
-                        case BTService.STATE_CONNECTED:
-                            findViewById(R.id.txtBTStatus).setBackgroundColor(Color.BLUE);
-                            req = 1;
-                            requestAll(req);
-                            Log.d("Status", "BT Connected");
-                            break;
-                        default:
-                            Log.d("Status", "Error, no status recognised");
-                            break;
+                    if(fragState == fragmentState.BLUETOOTH) {
+                        switch (msg.arg1) {
+                            case BTService.STATE_NONE:
+                                findViewById(R.id.txtBTStatus).setBackgroundColor(Color.BLACK);
+                                Log.d("Status", "BT None");
+                                break;
+                            case BTService.STATE_LISTEN:
+                                findViewById(R.id.txtBTStatus).setBackgroundColor(Color.RED);
+                                Log.d("Status", "BT listening");
+                                req = 0;
+                                break;
+                            case BTService.STATE_CONNECTING:
+                                findViewById(R.id.txtBTStatus).setBackgroundColor(Color.YELLOW);
+                                Log.d("Status", "BT Connecting");
+                                break;
+                            case BTService.STATE_CONNECTED:
+                                findViewById(R.id.txtBTStatus).setBackgroundColor(Color.BLUE);
+                                req = 1;
+                                requestAll(req);
+                                Log.d("Status", "BT Connected");
+                                break;
+                            default:
+                                Log.d("Status", "Error, no status recognised");
+                                break;
+                        }
                     }
+                    break;
             }
         }
     };
@@ -492,30 +518,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ruleIDList.clear();
         listOfRules.clear();
         formattedRules.clear();
+        if(!inString.equals("[Empty List]")) {
 
-        Matcher m = Pattern.compile("ID:(.*?)]").matcher(str);
-        while(m.find()) {
-            //Log.d("aaaa", "match: " + m.group());
+            Matcher m = Pattern.compile("ID:(.*?)]").matcher(str);
+            while (m.find()) {
+                //Log.d("aaaa", "match: " + m.group());
 
-            String[] pairs = m.group().split("Rule: ");
-            Log.d("aaaa",Arrays.toString(pairs));
+                String[] pairs = m.group().split("Rule: ");
+                //Log.d("aaaa", Arrays.toString(pairs));
 
-            String id = pairs[0].substring(4);
-            String dev = pairs[1].split(":")[3];
-            String state = pairs[1].split(":")[4];
-            String rule =  pairs[1].substring(1, pairs[1].length() -1);
-            String formatRule = rule.substring(0, rule.indexOf(dev)) + rule.substring(rule.indexOf(dev) + dev.length() +1 + state.length() +1);
-            //Log.d("aaaa","ID: " + id +"Dev: " + dev +" rule: " + rule);
-            //Log.d("aaaa","fR = " + formatRule);
-            String format = convertRules(formatRule);
-            format = writeUserRule(id, dev, state ,format);
+                String id = pairs[0].substring(4);
+                String dev = pairs[1].split(":")[3];
+                String state = pairs[1].split(":")[4];
+                String rule = pairs[1].substring(1, pairs[1].length() - 1);
+                String formatRule = rule.substring(0, rule.indexOf(dev)) + rule.substring(rule.indexOf(dev) + dev.length() + 1 + state.length() + 1);
+                //Log.d("aaaa","ID: " + id +"Dev: " + dev +" rule: " + rule);
+                //Log.d("aaaa","fR = " + formatRule);
+                String format = convertRules(formatRule);
+                format = writeUserRule(id, dev, state, format);
 
-            Log.d("aaaa","converted: " + format);
+                //Log.d("aaaa", "converted: " + format);
+                ruleIDList.add(id);
+                ruleList.add(rule);
+                formattedRules.add(format);
+
+                listOfRules.put(id, rule);
+            }
+        }
+        else{
+            String id = "0", rule = "NO RULES SET", format = "ID: Nan } No rules set, Create one!";
             ruleIDList.add(id);
             ruleList.add(rule);
             formattedRules.add(format);
 
-            listOfRules.put(id,rule);
+            listOfRules.put(id, rule);
         }
     }
     private String convertRules(String str){
@@ -543,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             op = tmp.split(":")[2];
             ret = s + ":" + op + ":" + d;
             //Log.d("aaaa","split: " + Arrays.toString(tmp.split(":")));
-            Log.d("aaaa","ret: " + ret);
+            //Log.d("aaaa","ret: " + ret);
             if(array.size() > 2) {
                 for (int i = 1; i <= array.size() - 1; i += 2) {
                     //Log.d("aaaa", "ar= " + array.get(i));
@@ -556,7 +592,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     cn = tmp.substring(0, tmp.length() - 1);
                     ret += cn + ":" + s + ":" + op + ":" + d;
                     //Log.d("aaaa","split: " + Arrays.toString(tmp.split(":")));
-                    Log.d("aaaa", "ret: " + ret);
+                    //Log.d("aaaa", "ret: " + ret);
                 }
             }
         }
@@ -567,7 +603,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String ret;
 
         if(str != null) {
-            Log.d("aaaa", "userstr : " + str);
+            //Log.d("aaaa", "userstr : " + str);
             str = str.replace("GE", "Greater Than");
             str = str.replace(":", " ");
             str = str.replace("LE", "Less Than");
@@ -584,45 +620,89 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void processSensors(String inString){
-        //{Name: Time ID: 0 Time: 0} Name: emonth6 ID: 1 Temp: 19.9 Time: 1587916150 Name: emonth8 ID: 2 Temp: 19.8 Time: 1587916148 Name: emonth7 ID: 3 Temp: 19.8 Time: 1587916161
+        //{Name: Time ID: 0 Time: 0} {Name: emonth6 ID: 1 Temp: 19.9 Time: 1587916150} {Name: emonth8 ID: 2 Temp: 19.8 Time: 1587916148} {Name: emonth7 ID: 3 Temp: 19.8 Time: 1587916161}
         String str = inString;
-        sensorAdaptor = null;
+        //sensorAdaptor = null;
+        //sensorAdaptor.notifyDataSetChanged();
         sensorList.clear();
         sensorIDList.clear();
         listOfSensors.clear();
 
-        Matcher m = Pattern.compile("\\((.*?)\\)").matcher(str);
-        while(m.find()){
-            String id = "";
-            String name = "";
-            String val = "";
-            String time = "";
-            String[] elements;
+        if(!inString.equals("[Empty String]")) {
+            Matcher m = Pattern.compile("\\((.*?)\\)").matcher(str);
+            while (m.find()) {
+                String id = "";
+                String name = "";
+                String val = "";
+                String time = "";
+                String[] elements;
 
-            elements = m.group().split("\\s+");
-            //Log.d("aaaa", "ele = " + Arrays.toString(elements));
-            id = elements[3];
-            //Log.d("aaaa","id:" + id);
-            Calendar c = Calendar.getInstance();
-            if(id.equals("0")){
-                name = "Time sensor";
-                time = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
-            }
-            else{
-                name = elements[1];
+                elements = m.group().split("\\s+");
+                //Log.d("aaaa", "ele = " + Arrays.toString(elements));
                 id = elements[3];
-                val = elements[5];
-                time = elements[7].substring(0, elements[7].length() -1);
-                c.setTimeInMillis(Long.valueOf(time)*1000);
-                time = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
+                //Log.d("aaaa","id:" + id);
+                Calendar c = Calendar.getInstance();
+                if (id.equals("0")) {
+                    name = "Time sensor";
+                    time = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
+                } else {
+                    name = elements[1];
+                    id = elements[3];
+                    val = elements[5];
+                    time = elements[7].substring(0, elements[7].length() - 1);
+                    c.setTimeInMillis(Long.valueOf(time) * 1000);
+                    time = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
+                }
+
+                String sensor = "Sensor " + id + "} " + name + " Temp: " + val + " at: " + time;
+                Log.d("aaaa", "Sen = " + name + " id: " + id + " val: " + val + " Time: " + time);
+
+                sensorList.add(sensor);
+                sensorIDList.add(id);
+                listOfSensors.put(id, sensor);
             }
-
-            String sensor = "Sensor " + id + "} "+ name + " Temp: " + val + " at: " + time;
-            Log.d("aaaa", "Sen = " + name + " id: " + id + " val: " + val + " Time: " + time);
-
+        }else{
+            String sensor = "Sensors in list", id = "No ";
             sensorList.add(sensor);
             sensorIDList.add(id);
             listOfSensors.put(id, sensor);
+        }
+    }
+
+    private void processObjects(String inString){
+        //ObjAdaptor = null;
+        //ObjAdaptor.notifyDataSetChanged();
+        ObjList.clear();
+        ObjIDList.clear();
+        formattedObjs.clear();
+        listOfObjs.clear();
+
+        String str = inString;
+        if(!inString.equals("[Empty List]")){
+            Matcher m = Pattern.compile("\\((.*?)\\)").matcher(str);
+            while(m.find()){
+                String[] elements;
+                String name;
+                String id;
+                String state;
+                elements = m.group().split("\\s+");
+                Log.d("aaaa", "ele: " + Arrays.toString(elements));
+
+                name = elements[1];
+                id = elements[3];
+                state = elements[5];
+
+                String obj = "ID:" + id + " Name: " + name + " State: " + state;
+
+                ObjList.add(name);
+                ObjIDList.add(id);
+                formattedObjs.add(obj);
+                listOfObjs.put(id,name);
+
+            }
+        }else{
+            Log.d("aaaa","Fuck off ya dumb cow");
+
         }
     }
     private void processInput(String inString){
@@ -640,6 +720,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     processSensors(inString);
                     Log.d("aaaa", "req = " + req + " : " + inString);
                 }else if(req == 3){
+                    processObjects(inString);
                     Log.d("aaaa", "req = " + req + " : " + inString);
                 }else if(req == 4){
                     Log.d("aaaa", "req = " + req + " : " + inString);
@@ -654,7 +735,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 populateSensorView();
                 break;
             case DEVICE:
-
+                processObjects(inString);
+                populateObjView();
                 break;
         }
     }

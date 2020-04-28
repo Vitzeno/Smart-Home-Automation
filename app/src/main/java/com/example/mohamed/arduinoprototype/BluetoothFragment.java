@@ -52,14 +52,17 @@ public class BluetoothFragment extends Fragment
 
         populateListView();
         setUpListner();
+        ((MainActivity)getActivity()).setStatusBar();
     }
     @Override
     public void onResume(){
         super.onResume();
         ((MainActivity)getActivity()).navView.setCheckedItem(R.id.nav_bluetooth);
+        ((MainActivity)getActivity()).setStatusBar();
     }
     private void populateListView() {
         arrayAdapter = ((MainActivity)getActivity()).arrayAdapter;
+        arrayAdapter.notifyDataSetChanged();
         lstView.setAdapter(arrayAdapter);
     }
 
@@ -68,7 +71,7 @@ public class BluetoothFragment extends Fragment
         Log.d("aaaa", "updating");
         devices = ((MainActivity)getActivity()).deviceNames;
         listOfDevices = ((MainActivity)getActivity()).listOfDevices;
-        arrayAdapter.notifyDataSetChanged();
+
         populateListView();
     }
 

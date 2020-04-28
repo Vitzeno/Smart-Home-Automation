@@ -1,5 +1,6 @@
 package com.example.mohamed.arduinoprototype;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -90,6 +91,8 @@ public class RuleFragment extends Fragment
         switch (v.getId()) {
             case R.id.DeleteRules:
                 delete = !delete;
+                int color = (delete == true) ? Color.GREEN : Color.BLUE;
+                v.findViewById(R.id.DeleteRules).setBackgroundColor(color);
                 Log.d("aaaa", "Del: " + delete);
                 break;
             case R.id.GetRules:

@@ -9,10 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/CustomStyle">
-        <activity android:name=".AddRuleActivity"></activity>
-        <activity android:name=".Devices" />
-        <activity android:name=".RuleActivity" />
-        <activity android:name=".SensorActivity" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait">
@@ -23,10 +19,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".MyBluetoothService"
-            android:enabled="true"
-            android:exported="true" />
         <service
             android:name=".BTService"
             android:enabled="true"

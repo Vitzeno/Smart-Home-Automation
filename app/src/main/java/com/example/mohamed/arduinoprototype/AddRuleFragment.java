@@ -118,6 +118,7 @@ public class AddRuleFragment extends Fragment
             op.setAdapter(opAdapter);
             multi.setAdapter(multiAdapter);
 
+
             type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -147,6 +148,8 @@ public class AddRuleFragment extends Fragment
             updateUserStr(null);
             rulecount = 0;
             multi.setVisibility(View.GONE);
+            stateSwitch.setVisibility(View.VISIBLE);
+
         }
     }
     private void updateStr(String str){
@@ -159,6 +162,7 @@ public class AddRuleFragment extends Fragment
         Log.d("aaaa", commandStr);
         if(rulecount > 0){
             multi.setVisibility(View.VISIBLE);
+            stateSwitch.setVisibility(View.GONE);
         }
 
     }
@@ -189,7 +193,8 @@ public class AddRuleFragment extends Fragment
             case R.id.ADD:
                 String value = "";
                 String sensor = "";
-                String state = ":" + ruleState;
+                String state = (rulecount > 0) ? "" : ":" + ruleState;
+                String stateStr = (rulecount > 0) ? "" : stateSwitch.getText().toString();
                 String device = "";
                 device = ":" + devices.getSelectedItem().toString();
 
@@ -213,9 +218,9 @@ public class AddRuleFragment extends Fragment
                 }
                 Log.d("aaaa",type.getSelectedItem().toString());
                 if(type.getSelectedItem().toString() == "Time")
-                    updateUserStr(device +":"+ stateSwitch.getText() + ":" + additional + ":Time" + operator + ":" + time.getText().toString());
+                    updateUserStr(device +":"+ stateStr + ":" + additional + ":Time" + operator + ":" + time.getText().toString());
                 else if(type.getSelectedItem().toString() == "Temperature")
-                    updateUserStr(device +":"+ stateSwitch.getText() + ":" + additional + sensor + operator + value);
+                    updateUserStr(device +":"+ stateStr + ":" + additional + sensor + operator + value);
 
                 //val.setAdapter(null);
                 sen.setAdapter(null);

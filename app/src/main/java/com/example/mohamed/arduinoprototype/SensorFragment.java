@@ -53,7 +53,7 @@ public class SensorFragment extends Fragment
 
         if(sensorAdaptor != null)
         {
-            Log.d("aaaa", "adaptor != null");
+            Log.d("aaaa", "senAdaptor != null");
             sensorAdaptor.notifyDataSetChanged();
         }
     }

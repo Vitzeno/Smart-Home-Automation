@@ -163,6 +163,7 @@
             android:layout_height="31dp"
             android:layout_marginTop="20dp"
             android:background="@color/colorButton"
+            android:onClick="onClickAddRuleFragOp"
             android:text="On"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/Device"
