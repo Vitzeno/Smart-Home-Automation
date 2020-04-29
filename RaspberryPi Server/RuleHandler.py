@@ -48,10 +48,10 @@ class RuleHandler():
                     print("Rule Targeting Device: {0}" .format(targetDevice)) 
                     print("Rule Targeting State: {0}" .format(targetState)) 
 
-                    state = ruleEval.parseRule(currentRule.parsableRule)
+                    state = bool(ruleEval.parseRule(currentRule.parsableRule))
                     print("Evalauted to {0} \n" .format(state))
 
-                    if bool(state):
+                    if state:
                         print("Switching device {0} to {1}" .format(int(targetDevice), bool(targetState)))
                         targetDeviceObject.lastKnownState = bool(targetState)
                         Radio.switchSocket(int(targetDevice), bool(targetState))

@@ -59,7 +59,7 @@ class Parser:
         elif(device[0] == "S"):
             try:
                 print("Switch deivice {0} to {1}" .format(device[1], device[2]))
-                Radio.switchSocket(device[1], bool(int(device[2])))
+                Radio.switchSocket(int(device[1]), bool(int(device[2])))
                 toSwitch = deviceList.getDeviceByID(device[1])
                 toSwitch.lastKnownState = bool(int(device[2]))
                 deviceList.setDevicesObject()
