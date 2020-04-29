@@ -307,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 btfm = (BluetoothFragment) fm.findFragmentByTag("BTFrag");
                 Log.d("aaaa", "aa: " + btfm);
                 break;
-            case R.id.btnOn:
+            /*case R.id.btnOn:
                 outStringBuff.setLength(0);
                 outStringBuff.append("C:D:S:1:1");
                 send = outStringBuff.toString().getBytes();
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 BTservice.write(send);
                 Log.d("aaaa","sending off");
                 break;
-
+            */
             case R.id.NewRule:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddRuleFragment(), "AddRule").addToBackStack(null).commit();
                 break;
@@ -653,8 +653,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     c.setTimeInMillis(Long.valueOf(time) * 1000);
                     time = c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE);
                 }
+                String sensor;
+                if(id.equals("0"))
+                     sensor = "Sensor " + id + "} " + name + ": " + time;
+                else
+                    sensor = "Sensor " + id + "} " + name + " Temp: " + val + " at: " + time;
 
-                String sensor = "Sensor " + id + "} " + name + " Temp: " + val + " at: " + time;
                 Log.d("aaaa", "Sen = " + name + " id: " + id + " val: " + val + " Time: " + time);
 
                 sensorList.add(sensor);

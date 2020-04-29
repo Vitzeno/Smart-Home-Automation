@@ -38,7 +38,7 @@ public class AddRuleFragment extends Fragment
     private Button stateSwitch;
     private String [] vals = {"1","2","3","4","5","6","7","8","9"};
     private String [] types = {"Time", "Temperature"};
-    private String [] ops = {"LE","GE","EQ"};
+    private String [] ops = {"<",">","=="};
     private String [] mult = {"AND", "OR", "NOT"};
     private long timeval;
 
@@ -209,7 +209,14 @@ public class AddRuleFragment extends Fragment
                     sensor =":" + sen.getSelectedItem().toString();
                 }
 
-                String operator = ":" + op.getSelectedItem().toString();
+                String operator =  op.getSelectedItem().toString();
+                if(operator.equals("<"))
+                    operator = ":LE";
+                else if(operator.equals(">"))
+                    operator = ":GE";
+                else
+                    operator = ":EQ";
+
                 String additional = "";
                 if(rulecount > 0)
                 {
@@ -243,6 +250,7 @@ public class AddRuleFragment extends Fragment
                 ruleState = (ruleState == 1)? 0 : 1;
                 String t = (ruleState == 1) ? "On" : "Off";
                 stateSwitch.setText(t);
+                break;
             case R.id.Send:
                 if(rulecount > 0) {
                     Log.d("aaaa", "Attempting to send");

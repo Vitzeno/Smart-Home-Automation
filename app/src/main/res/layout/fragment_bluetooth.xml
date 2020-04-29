@@ -9,30 +9,6 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/btnOn"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btnScan"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:background="@color/colorButton"
-            android:onClick="onClickButton"
-            android:text="On" />
-
-        <Button
-            android:id="@+id/btnOff"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnScan"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:background="@color/colorButton"
-            android:onClick="onClickButton"
-            android:text="Off" />
-
-        <Button
             android:id="@+id/btnScan"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
