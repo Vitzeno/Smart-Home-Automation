@@ -45,17 +45,20 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-
+    //Enum used to keep track of the current fragment in the foreground
     public enum fragmentState{RULE,SENSOR,DEVICE, BLUETOOTH}
     private fragmentState fragState;
+    //req is used to fetch data once a connection is made for early list population
     private int req = 0;
 
+    //These five ints are used to respond appropriately to the signals received from the BTservice class
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
 
+    //Default string values for a few of the generic internal outputs. Almost always overwritten elsewhere
     public static final String DEVICE_NAME = "device_name";
     public static final String INCOMING_DATA = "incoming_data";
     public static final String TOAST = "toast";
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     public NavigationView navView;
 
+    //Output/Input string buffers for the send/write functions for the BTservice.
     public StringBuffer outStringBuff = new StringBuffer("");
     public StringBuffer inStringBuff = new StringBuffer("");
     public BTService BTservice;
@@ -75,38 +79,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Bluetooth request code
     int REQUEST_ENABLE_BT = 1;
 
-    // The list view of bluetooth devices
+    // The list view of bluetooth devices, deprecated, now in Bluetooth Fragment
     public ListView lstView;
+    // Adapter, Arraylists and the hashmap of values corresponding to the bluetooth devices that are available in the general area.
     public ArrayAdapter<String> arrayAdapter;
     public ArrayList<String> deviceNames = new ArrayList<>();
     public ArrayList<String> macAddresses = new ArrayList<>();
     public HashMap<String, String> listOfDevices = new HashMap<String, String>();
 
+    // Adapter, Arraylists and the hashmap of values corresponding to the rules that are available on the server.
     public ArrayAdapter<String> ruleAdaptor;
     public ArrayList<String> ruleList = new ArrayList<>();
     public ArrayList<String> formattedRules = new ArrayList<>();
     public ArrayList<String> ruleIDList = new ArrayList<>();
     public HashMap<String,String> listOfRules = new HashMap<>();
 
+    // Adapter, Arraylists and the hashmap of values corresponding to the sensor devices that are available on the server.
     public ArrayAdapter<String> sensorAdaptor;
     public ArrayList<String> sensorList = new ArrayList<>();
-    //public ArrayList<String> formattedRules = new ArrayList<>();
     public ArrayList<String> sensorIDList = new ArrayList<>();
     public HashMap<String,String> listOfSensors = new HashMap<>();
 
+    // Adapter, Arraylists and the hashmap of values corresponding to the devices that are available on the server.
     public ArrayAdapter<String> ObjAdaptor;
     public ArrayList<String> ObjList = new ArrayList<>();
     public ArrayList<String> formattedObjs = new ArrayList<>();
     public ArrayList<String> ObjIDList = new ArrayList<>();
     public HashMap<String,String> listOfObjs = new HashMap<>();
 
-
+    //Fragment manager which will allow this activity to handle and keep track of the fragments it makes
     public FragmentManager fm = getSupportFragmentManager();
+    // A reference to each of the fragments available from this activity
     public BluetoothFragment btfm;
     public RuleFragment rlfm;
     public SensorFragment snfm;
     public DeviceFragment dvfm;
 
+    /**
+     * This method handles the initialisation of the app. It starts the BTService and registers to broadcast receivers.
+     * */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         btfm = (BluetoothFragment) fm.findFragmentByTag("BTFrag");
         if(btfm == null)
-            Log.d("aaaa", "FUCK");
+            Log.d("aaaa", "No fragment yet...");
 
         // Check if device supports bluetooth
         if (bluetoothAdapter == null) {
@@ -146,9 +157,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(receiver, filter);
 
-        //btfm.populateListView(deviceNames);
         populateListView();
-        //setUpListner();
 
         BTservice = new BTService(this, mHandler);
         BTservice.start();
@@ -158,10 +167,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new BluetoothFragment(), "BTFrag").addToBackStack(null).commit();
             navView.setCheckedItem(R.id.nav_bluetooth);
         }
-
-        //setStatusBar();
     }
 
+    /**
+     * Handles the Navigation bar, starting the correct fragment based on user input.
+     * A new fragment is loaded and given an id to be used later and then added to the backstack.
+     * Once something is selected, the bar is closed.
+     * @param menuItem The item on the navigation bar that was pressed down
+     * */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         Log.d("aaaa", "Nav Stuff " + menuItem.getItemId());
@@ -185,7 +198,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     /**
-     * This method requests bluetooth access from the user
+     * This method requests bluetooth access from the user. If the bluetooth functionality is turned off, requests for it to be turned on.
+     * Then, attempts to connect to bluetooth
      */
     public void requestBluetooth() {
         if (!bluetoothAdapter.isEnabled()) {
@@ -194,7 +208,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         connectBluetooth();
     }
-
+    /**
+     * A list of paired devices is requested and used to populate the listView with the values.
+     * */
     public void connectBluetooth() {
         pairedDevices = bluetoothAdapter.getBondedDevices();
         // First check if there are any already paired devices
@@ -209,11 +225,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             Toast.makeText(getApplicationContext(), "No Paired Bluetooth Devices Found.", Toast.LENGTH_LONG).show();
         }
-
-        //btfm.populateListView(deviceNames);
         populateListView();
     }
 
+    /**
+     * Populates the list view with the devices names of bluetooth devices.
+     * The array adapter is created and the update function on the bluetooth fragment is called
+     **/
     public void populateListView() {
         //lstView = (ListView) findViewById(R.id.lstDevices);
         arrayAdapter = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, deviceNames);
@@ -230,7 +248,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("aaaa", "fm = " + fm.getFragments());
         //btfm.lstView.setAdapter(arrayAdapter);
     }
-
+    /**
+     * Populates the list view in the rule fragment with the formatted rules
+     * The adapter is formed and the update function is called in the rule fragment
+     **/
     public void populateRuleView(){
 
         ruleAdaptor = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, formattedRules);
@@ -243,7 +264,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.d("aaaa", "update sent");
         }
     }
-
+    /**
+     * Populates the list view in the sensor fragment with the formatted sensor list
+     * The adapter is formed and the update function is called in the sensor fragment
+     **/
     public void populateSensorView(){
 
         sensorAdaptor = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, sensorList);
@@ -256,6 +280,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.d("aaaa", "update sent");
         }
     }
+    /**
+     * Populates the list view in the Device fragment with the formatted objects list
+     * The adapter is formed and the update function is called in the Device fragment
+     **/
     public void populateObjView(){
 
         ObjAdaptor = new ArrayAdapter<String>(this, R.layout.devices_view, R.id.txtName, formattedObjs);
@@ -269,7 +297,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-
+    /**
+     * The Bluetooth list view is emptied and repopulated with default paired devices.
+     * Used to ensure that new connections replace old invalid ones and prevent the list view from becoming over crowded
+     * */
     private void clearBTList(){
         listOfDevices.clear();              //clear the existing lists
         pairedDevices = null;
@@ -290,8 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     /**
      * This method handles button clicks
-     *
-     * @param v
+     * @param v The current view
      */
     public void onClickButton(View v) {
         byte[] send;
@@ -307,22 +337,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 btfm = (BluetoothFragment) fm.findFragmentByTag("BTFrag");
                 Log.d("aaaa", "aa: " + btfm);
                 break;
-            /*case R.id.btnOn:
-                outStringBuff.setLength(0);
-                outStringBuff.append("C:D:S:1:1");
-                send = outStringBuff.toString().getBytes();
-                BTservice.write(send);
-                Log.d("aaaa","sending on");
-                break;
 
-            case R.id.btnOff:
-                outStringBuff.setLength(0);
-                outStringBuff.append("C:D:S:1:0");
-                send = outStringBuff.toString().getBytes();
-                BTservice.write(send);
-                Log.d("aaaa","sending off");
-                break;
-            */
             case R.id.NewRule:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AddRuleFragment(), "AddRule").addToBackStack(null).commit();
                 break;
@@ -333,22 +348,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
     }
-
+    /**
+     * Helper function to assign Onclick events to the correct fragment.
+     * Calls the onclick on the Add Rule Fragment to assigned buttons
+     * @param v The current view
+     **/
     public void onClickAddRuleFragOp(View v){
         AddRuleFragment ad = (AddRuleFragment) fm.findFragmentByTag("AddRule");
         ad.onClickOp(v);
     }
+    /**
+     * Helper function to assign Onclick events to the correct fragment.
+     * Calls the onclick on the Rule Fragment to assigned buttons
+     * @param v The current view
+     **/
     public void onClickRuleFragOP(View v){
         RuleFragment rf = (RuleFragment) fm.findFragmentByTag("RulFrag");
         rf.onClickOp(v);
-    }public void onClickSenFragOP(View v){
+    }
+    /**
+     * Helper function to assign Onclick events to the correct fragment.
+     * Calls the onclick on the Sensor Fragment to assigned buttons
+     * @param v The current view
+     **/
+    public void onClickSenFragOP(View v){
         SensorFragment sf = (SensorFragment) fm.findFragmentByTag("SenFrag");
         sf.onClickOp(v);
-    }public void onClickObjFragOP(View v){
+    }
+    /**
+     * Helper function to assign Onclick events to the correct fragment.
+     * Calls the onclick on the Device Fragment to assigned buttons
+     * @param v The current view
+     **/
+    public void onClickObjFragOP(View v){
         DeviceFragment df = (DeviceFragment) fm.findFragmentByTag("DevFrag");
         df.onClickOp(v);
     }
 
+    /**
+     * Used to check user input to bluetooth request.
+     * If request is denied, the request is made again until the user accepts it
+     * @param data Data returned by the callback
+     * @param requestCode The request code that has resulted in the callback
+     * @param resultCode The result of that request
+     **/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check is bluetooth request was granted
@@ -408,9 +451,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onResume() {
         super.onResume();
-        //setStatusBar();
     }
 
+    /**
+     * Sets the color of the status bar to show the current state of the Bluetooth connection
+     **/
     public void setStatusBar()
     {
         switch(BTservice.getState()){
@@ -430,6 +475,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Handler responsible for communication between the BTService and the main activity.
+     * keeps track of what the Service is receiving and returning to the Activity to respond appropriately.
+     * Incoming data is sent off to be processed and state changes to the connection is also handled.
+     **/
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -490,6 +540,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
+    /**
+     * Default request once the connection is made for the first time to a server.
+     * @param i The request code. Iterates through the different requests based on its value
+     **/
     public void requestAll(int i) {
         if (i == 1) {
             byte[] send = "R:AR".getBytes();
@@ -508,10 +562,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             findViewById(R.id.txtBTStatus).setBackgroundColor(Color.GREEN);
         }
     }
+
+    /**
+     * Helper function used by the fragments to inform the main activity about which fragment is currently on top and in view.
+     * @param frag The state to be set*/
     public void setfragmentstate(fragmentState frag){
         fragState = frag;
     }
 
+    /**
+     * Function used to create a list of rules from incoming data, formatting it into something user readable.
+     * Cuts the incoming string into substrings containing the rule and id.
+     * That substring is then further split into ID-Rule pairs.
+     * Those Strings are then further processed to extract the raw rules and id values which are added to the hashmap.
+     * The rules are passed along to ConvertRules() and WriteUserRule() to get a user readable version of it.
+     *
+     * @param inString The incoming string to be processed into valid rules
+     **/
     private void processRules(String inString){
         String str = inString;
         ruleList.clear();
@@ -554,6 +621,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             listOfRules.put(id, rule);
         }
     }
+    /**
+     * The raw rules are converted into a more gramatically correct form. The raw string is processed slightly to make using a regex easier first.
+     * Then, strings that fit the pattern is found, splitting it into two comparison values and the operator and a connector is there are multiple subrules.
+     * The individual components of the rules are then stitched back together in the correct form and appended onto the return string.
+     *
+     * @param str The rule to be converted into a proper form
+     * @return  The processed rule, in a grammatically correct order.
+     **/
     private String convertRules(String str){
         String ret = "";
         ArrayList<String> array = new ArrayList<>();
@@ -599,6 +674,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return ret;
     }
+    /**
+     * Writes a rule using the parameters passed in, into more user-friendly language.
+     * It converts the internal language and symbols used by the system into english. Requires the str passed in has already been converted into a grammatically correct state.
+     *
+     * @param dev The name of the device the rule is applied to.
+     * @param id The id of the rule
+     * @param state The state the device should be switched to if the rule is true
+     * @param str The string representing the rule.
+     * @return The Formatted string, ready to be added to the arraylist and displayed to the user
+     **/
     private String writeUserRule(String id, String dev, String state, String str){
         String ret;
 
@@ -619,6 +704,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return ret;
     }
 
+    /**
+     * Function responsible for handling the data recieved from the sever in response to a request for sensor data
+     * Similar to ProcessRules(), converts the incoming data packet into a user readable format.
+     * Matches the instring to a regex to create individual sensor information strings which are then further processed
+     * to extract useful data.
+     * The data is then formatted into a string which is then added to the corresponding arraylists
+     * @param inString The incoming data to be processed
+     **/
     private void processSensors(String inString){
         //{Name: Time ID: 0 Time: 0} {Name: emonth6 ID: 1 Temp: 19.9 Time: 1587916150} {Name: emonth8 ID: 2 Temp: 19.8 Time: 1587916148} {Name: emonth7 ID: 3 Temp: 19.8 Time: 1587916161}
         String str = inString;
@@ -673,6 +766,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * Handles the data coming in response to a request for controllable objects.
+     * The instring is matched to a regex and the substrings are processed to extract data for individual devices.
+     * The extracted data is formatted into a string which is then added to the proper arraylists, ready to populate the object lists
+     *
+     * @param inString Incoming data string from the server
+     **/
     private void processObjects(String inString){
         //ObjAdaptor = null;
         //ObjAdaptor.notifyDataSetChanged();
@@ -709,6 +809,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
     }
+
+    /**
+     * This method decides what to do when data is received from the server based upon the current fragState.
+     * The correct data processing method is called to format the data properly.
+     * If the the current fragment is the Bluetooth Fragment, all data is requested sequentially to populating the arraylists on startup.
+     **/
     private void processInput(String inString){
         switch(fragState){
             case RULE:

@@ -33,6 +33,10 @@ public class BluetoothFragment extends Fragment
     public ArrayList<String> macAddresses = new ArrayList<>();
     public HashMap<String, String> listOfDevices = new HashMap<String, String>();
 
+
+    /**
+     * Called when the Fragment is created. A view is inflated and the fragState in main is set to bluetooth
+     * */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -43,6 +47,9 @@ public class BluetoothFragment extends Fragment
         return v;
     }
 
+    /**
+     * Responsible for registering the objects within the fragment and initialising the state of the status bar.
+     * */
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         lstView = (ListView) getView().findViewById(R.id.lstDevices);
@@ -60,12 +67,20 @@ public class BluetoothFragment extends Fragment
         ((MainActivity)getActivity()).navView.setCheckedItem(R.id.nav_bluetooth);
         ((MainActivity)getActivity()).setStatusBar();
     }
+
+    /**
+     * Populates the list with data from the adapter in main.
+     * */
     private void populateListView() {
         arrayAdapter = ((MainActivity)getActivity()).arrayAdapter;
         arrayAdapter.notifyDataSetChanged();
         lstView.setAdapter(arrayAdapter);
     }
 
+    /**
+     * Called by the corresponding function in main Activity when the adapter for bluetooth devices is updated.
+     * This function calls the populateListView function to fill the list with bluetooth devices.
+     * */
     public void updateList()
     {
         Log.d("aaaa", "updating");
@@ -77,6 +92,7 @@ public class BluetoothFragment extends Fragment
 
     /**
      * This method sets up a listener on the list view
+     * When an item is pressed, an attempt is made to connect to the MAC address by sending the request to the service
      */
     public void setUpListner() {
 

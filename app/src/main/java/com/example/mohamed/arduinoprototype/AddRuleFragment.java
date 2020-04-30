@@ -52,6 +52,10 @@ public class AddRuleFragment extends Fragment
         return view;
     }
 
+    /**
+     * Once the view is created, assign the objects and attach the listener to the time button
+     * The variables are also initialised here
+     **/
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         commandStr = "C:R:C:";
@@ -96,6 +100,13 @@ public class AddRuleFragment extends Fragment
 //        updateStr(null);
 
     }
+    /**
+     * Responsible for maintaining the values held with the container. The values are reset whenever a message is sent over to the server.
+     * Partial clearing, such as when a rule has multiple parts, only resets the spinners.
+     * Full clearing resets everything, returning the fragment to a default state.
+     *
+     * @param c The level of clearing required. Can be FULL or PARTIAL
+     * */
     private void Reset(clear c){
         if(c == clear.PARTIAL || c == clear.FULL) {
             ArrayAdapter<String> valAdapter = new ArrayAdapter<String>(this.getActivity(),R.layout.spinner_layout, vals);
@@ -152,6 +163,10 @@ public class AddRuleFragment extends Fragment
 
         }
     }
+    /**
+     * Takes a rule as a string, appending it the end of an existing rule string to be sent off to the server
+     * @param str The rule to be added to the final rule list
+     **/
     private void updateStr(String str){
         if(str != null)
             commandStr = commandStr + str;
@@ -166,6 +181,11 @@ public class AddRuleFragment extends Fragment
         }
 
     }
+
+    /**
+     * Converts the rule created by the user into something user readable, ready to be displayed.
+     * @param str The string to be converted
+     * */
     private void updateUserStr(String str){
 
         if(str != null) {
@@ -187,6 +207,12 @@ public class AddRuleFragment extends Fragment
         commandLn.setText(userStr);
     }
 
+    /**
+     * Function responsible for the button clicks within the fragment.
+     * Handles the add, clear, send and state functionality.
+     *
+     * @param v The current view containing the buttons
+     * */
     public void onClickOp(View v){
         switch (v.getId()){
 

@@ -65,7 +65,10 @@ public class RuleFragment extends Fragment
         ((MainActivity)getActivity()).navView.setCheckedItem(R.id.nav_rule);
     }
 
-
+    /**
+     * Populates the list with data from the adaptor in main.
+     * Called by the update function.
+     * */
     private void populateListView() {
         ruleAdaptor = null;
         ruleAdaptor = ((MainActivity)getActivity()).ruleAdaptor;
@@ -74,11 +77,14 @@ public class RuleFragment extends Fragment
 
         if(ruleAdaptor != null)
         {
-            Log.d("aaaa", "Ruleadaptor == null");
+            Log.d("aaaa", "Ruleadaptor != null");
             ruleAdaptor.notifyDataSetChanged();
         }
     }
 
+    /**
+     * Called by main when the adaptor for rules is changed. The corresponding local lists are updated and populateListView is called
+     * */
     public void updatelist(){
         Log.d("aaaa", "updating");
         rules = ((MainActivity)getActivity()).ruleList;
@@ -87,6 +93,13 @@ public class RuleFragment extends Fragment
         populateListView();
     }
 
+    /**
+     * Responsible for the onClick events for this fragment.
+     * Toggle the delete variable used to delete rules.
+     * Fetch a set of existing rules from the server to populate the list with
+     *
+     * @param v The current view
+     * */
     public void onClickOp(View v){
         switch (v.getId()) {
             case R.id.DeleteRules:
@@ -103,8 +116,6 @@ public class RuleFragment extends Fragment
                     Log.d("aaaa", "send request: " + requests[0]);
                     ((MainActivity) getActivity()).BTservice.write(send);
 
-                    //i++;
-                    //if(i>=requests.length){ i = 0;}
                     break;
                 }
                 else
@@ -113,6 +124,11 @@ public class RuleFragment extends Fragment
                 }
         }
     }
+
+    /**
+     * Set up the listener for items within the rule listview.
+     * When presssed, if delete is true, a delete rule command is send over to the server to delete the selected rule from the list.
+     * */
     public void setUpListner() {
 
         //lstView = (ListView) findViewById(R.id.lstDevices);
@@ -121,17 +137,7 @@ public class RuleFragment extends Fragment
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-                /*
-                TextView deviceName = (TextView) view.findViewById(R.id.txtName);
-                String deviceNameString = deviceName.getText().toString();
-                String deviceAddressString = listOfDevices.get(deviceNameString);
-                Toast.makeText(getView().getContext(), "" + deviceNameString + " : " + deviceAddressString, Toast.LENGTH_LONG).show();
 
-
-                String MAC_ADDR = deviceAddressString;
-                BluetoothDevice device = ((MainActivity)getActivity()).bluetoothAdapter.getRemoteDevice(MAC_ADDR);
-                ((MainActivity)getActivity()).BTservice.connect(device);
-                */
                 TextView rule = (TextView) view.findViewById(R.id.txtName);
                 String tmp = rule.getText().toString();
                 String id = tmp.substring(tmp.indexOf("ID: ") +4, tmp.indexOf(" Device"));

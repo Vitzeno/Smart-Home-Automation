@@ -40,6 +40,10 @@ public class DeviceFragment extends Fragment
 
         return v;
     }
+    /**
+     * Called once the view is created to assign all the objects on the view.
+     * Listeners are set up for the items in the list and variables are initialised
+     * */
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         lstObj = (ListView) getView().findViewById(R.id.lstObjs);
@@ -61,6 +65,9 @@ public class DeviceFragment extends Fragment
         ((MainActivity)getActivity()).navView.setCheckedItem(R.id.nav_device);
     }
 
+    /**
+     * Populates the Listview with data from the adapter in main activity.
+     * */
     private void populateListView() {
         objAdapter = null;
         objAdapter = ((MainActivity)getActivity()).ObjAdaptor;
@@ -73,7 +80,10 @@ public class DeviceFragment extends Fragment
             objAdapter.notifyDataSetChanged();
         }
     }
-
+    /**
+     * Called from main activity when the data in the adapter has changed.
+     * Local lists are updated with the new data and the list is populated with the adapter data.
+     * */
     public void updatelist() {
         Log.d("aaaa", "updating");
         objs = ((MainActivity) getActivity()).formattedObjs;
@@ -81,7 +91,11 @@ public class DeviceFragment extends Fragment
 
         populateListView();
     }
-
+    /**
+     * Handles the onClick events for this fragment.
+     * Allows for two buttons, one to fetch data about devices from the server
+     * and the other determines which state a device should be switched to
+     * */
     public void onClickOp(View v){
         switch(v.getId()){
             case R.id.GetDev:
@@ -91,8 +105,6 @@ public class DeviceFragment extends Fragment
                     Log.d("aaaa", "send request: " + requests[0]);
                     ((MainActivity) getActivity()).BTservice.write(send);
 
-                    //i++;
-                    //if(i>=requests.length){ i = 0;}
                     break;
                 }
                 else
@@ -111,23 +123,17 @@ public class DeviceFragment extends Fragment
         }
 
     }
-
+    /**
+     * Responsible for setting up the listener on the list items.
+     * Depending on the state of the switch button, will either send an 'OFF' or 'ON' signal to the selected device
+     * */
     private void setupListener(){
         lstObj.setClickable(true);
         lstObj.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
-                /*TextView deviceName = (TextView) view.findViewById(R.id.txtName);
-                String deviceNameString = deviceName.getText().toString();
-                String deviceAddressString = listOfDevices.get(deviceNameString);
-                Toast.makeText(getView().getContext(), "" + deviceNameString + " : " + deviceAddressString, Toast.LENGTH_LONG).show();
 
-
-                String MAC_ADDR = deviceAddressString;
-                BluetoothDevice device = ((MainActivity)getActivity()).bluetoothAdapter.getRemoteDevice(MAC_ADDR);
-                ((MainActivity)getActivity()).BTservice.connect(device);
-            */
                 TextView rule = (TextView) view.findViewById(R.id.txtName);
                 String tmp = rule.getText().toString();
                 String id = tmp.substring(tmp.indexOf("ID: ") +4, tmp.indexOf(" Name"));
