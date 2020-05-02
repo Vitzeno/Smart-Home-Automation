@@ -188,10 +188,8 @@ class SensorList(object):
         
         for sensor in js:
             currSensor = js[sensor]
-            TemperatureData = currSensor["temperature"]
-            #print("Temperature¬ Time: ", datetime.fromtimestamp(TemperatureData["time"]), "Value: ", TemperatureData["value"]) 
+            TemperatureData = currSensor["temperature"] 
             HumidityData = currSensor["humidity"]
-            #print("Humidity¬ Time:", datetime.fromtimestamp(HumidityData["time"]), "Value: ", HumidityData["value"])
             time = TemperatureData["time"]   
             data.update({sensor : (time, TemperatureData["value"], HumidityData["value"])})
          

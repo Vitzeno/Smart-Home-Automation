@@ -2,6 +2,7 @@ import unittest
 import sys
 sys.path.append('../')
 from Parser import Parser
+from RuleEvaluator import RuleEvaluator
 from ParserException import ParserException
 
 '''
@@ -14,6 +15,7 @@ class TestParser(unittest.TestCase):
 
     def setUp(self):
         self.p = Parser()
+        self.e = RuleEvaluator()
 
     def test_invalid_input(self):
         self.assertRaises(ParserException, self.p.parseInput, "F:32")
@@ -51,11 +53,11 @@ class TestParser(unittest.TestCase):
         self.assertRaises(ParserException, self.p.parseInput, "C:R:0:EQ:S2:12:LE:OR")
 
     def test_invalid_syntax(self):
-        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C:f:OR:e:AND:EQ:LE")
-        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C:21:GE:LE:AND")
-        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C:21::GE:LE:AND")
-        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C:ORAND:EQ:LE")
-        self.assertRaises((ValueError, ParserException), self.p.parseInput, "C:R:C::OR:")
+        self.assertRaises((ValueError, ParserException), self.e.parseRule, "C:R:C:2:1:e::AND:EQ:LE")
+        self.assertRaises((ValueError, ParserException), self.e.parseRule, "C:R:C:3:1:GE:LE:AND")
+        self.assertRaises((ValueError, ParserException), self.e.parseRule, "C:R:C:5:0::GE:LE:AND")
+        self.assertRaises((ValueError, ParserException), self.e.parseRule, "C:R:C:1:1ORAND:EQ:LE")
+        self.assertRaises((ValueError, ParserException), self.e.parseRule, "C:R:C:7:0:OR:")
 
     def test_invalid_request(self):
         pass
