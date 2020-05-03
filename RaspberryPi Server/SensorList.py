@@ -90,12 +90,12 @@ class SensorList(object):
             print(values[0][1])
             '''
 
-            for i in range(1, len(values)):
-                if i == 0:
-                    continue
-                self.sensorList[i].time = values[i][0]
-                self.sensorList[i].temperature = values[i][1]
-                self.sensorList[i].humidity = values[i][2]
+            for i in range(0, len(values)):
+                #if i == 0:
+                    #continue
+                self.sensorList[i+1].time = values[i][0]
+                self.sensorList[i+1].temperature = values[i][1]
+                self.sensorList[i+1].humidity = values[i][2]
 
             self.setSensorObject()
         except(IOError, OSError, FileNotFoundError, ValueError, KeyError, IndexError) as e:
