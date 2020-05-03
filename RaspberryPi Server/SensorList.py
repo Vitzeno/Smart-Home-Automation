@@ -78,7 +78,7 @@ class SensorList(object):
     This method requires a connection to the emonHub server to function, must wrap in try catch block
     '''
     def updateSensors(self):
-        print("Updateing tempreture and time")
+        print("Updating tempreture and time")
         try:
             sensors = self.requestAllData()
             values = list(sensors.values())
@@ -97,7 +97,7 @@ class SensorList(object):
                 self.sensorList[i].temperature = values[i][1]
                 self.sensorList[i].humidity = values[i][2]
 
-                
+            self.setSensorObject()
         except(IOError, OSError, FileNotFoundError, ValueError, KeyError, IndexError) as e:
             print("Failed to update sensors, make sure emonHub is running")
 
