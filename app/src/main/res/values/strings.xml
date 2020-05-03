@@ -1,3 +1,37 @@
 <resources>
     <string name="app_name">ArduinoPrototype</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <string name="home_second">Home Second</string>
+
+    <string-array name="Rule_Array">&lt;
+        <item>&lt;</item>
+        <item>GE</item>
+        <item>LE</item>
+        <item>AND</item>
+        <item>OR</item>
+        <item>NOT</item>
+    </string-array>
+    <string-array name="Digits">&lt;
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>0</item>
+    </string-array>
 </resources>

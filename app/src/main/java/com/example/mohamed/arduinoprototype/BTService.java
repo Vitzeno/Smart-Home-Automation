@@ -18,10 +18,12 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class BTService extends Service {
+    private static BTService thisService;
 
     private final static String name = "BTLightTest";
     private static UUID MY_UUID = UUID.fromString("94f39d29-7d6d-437d-973b-fba39e49d4ee");
@@ -50,6 +52,7 @@ public class BTService extends Service {
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
+
     }
 
     private synchronized void setState(int state) {
@@ -354,7 +357,7 @@ public class BTService extends Service {
                     {
                         Log.d("incoming", "bytes: " + bytes);
                         incomingString = new String(buffer, 0, bytes);
-                        Log.d("incoming", "Data: " + incomingString + " " + mmInStream.toString());
+                        Log.d("incoming", "Data: " + incomingString + " of type: " + mmInStream.toString());
 
                         Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_READ);
                         Bundle bundle = new Bundle();
