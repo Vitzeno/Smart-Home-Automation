@@ -2,7 +2,11 @@ import RPi.GPIO as GPIO
 import time
 import subprocess
 
+'''
+Sets up GPIO pins for usage
+'''
 def setUp():
+    GPIO.setwarnings(False)
     # make bt discoverable
     subprocess.call(['sudo', 'hciconfig', 'hci0', 'piscan'])
 
@@ -34,6 +38,12 @@ def setUp():
     GPIO.output (16, False)
     GPIO.output (13, False)
 
+'''
+Sends switch command to given device
+
+socket: target device
+state: state to switch too
+'''
 def switchSocket(socket, state):
     output = [True, True, True, True]
     output[3] = True if(state) else False
@@ -74,5 +84,13 @@ def switchSocket(socket, state):
     # Disable the modulator
     GPIO.output (22, False)
 
+'''
+Cleans up GPIO pins after usage
+'''
 def cleanUp():
-    GPIO.cleanup()
+    GPIO.cleanup(11)
+    GPIO.cleanup(15)
+    GPIO.cleanup(16)
+    GPIO.cleanup(13)
+    GPIO.cleanup(18)
+    GPIO.cleanup(22)

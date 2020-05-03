@@ -15,6 +15,11 @@ class BluetoothHandler:
     Dict = []
     Lock = []
 
+    '''
+    Concurrently running method which handle BT communications, all sending and reciving of 
+    data is handled by this method in a separate thread using dictionaries for communoication,
+    locks for synchronisation and events for notifications.
+    '''
     @classmethod
     def connectBT(cls, Dict, MessageEvent, EndEvent, ConnectEvent, SendEvent, lock):
         BluetoothHandler.Lock = lock
@@ -47,6 +52,9 @@ class BluetoothHandler:
 
         BluetoothHandler.startCommunication()
     
+    '''
+    Inifinte loop waiting to send and recive messages
+    '''
     @classmethod
     def startCommunication(cls):
         print("Communination Running...")
@@ -56,12 +64,17 @@ class BluetoothHandler:
                 BluetoothHandler.Dict["recv"] = BluetoothHandler.client_sock.recv(1024)
                 
                 data = BluetoothHandler.Dict["recv"].decode("utf-8")
-                print("Data = ", data)
-                BluetoothHandler.sendToClient(data)
+                #print("Data = ", data)
+                #BluetoothHandler.sendToClient(data)
 
                 BluetoothHandler.MessageEvent.set()
                 BluetoothHandler.Lock.release()
 
+                BluetoothHandler.SendEvent.wait(0.25)
+
+                if BluetoothHandler.SendEvent.is_set():
+                    BluetoothHandler.sendToClient(BluetoothHandler.Dict["write"].encode("utf-8"))
+                    BluetoothHandler.SendEvent.clear()
 
                 if BluetoothHandler.EndEvent.is_set():
                     BluetoothHandler.cleanUpBT()
@@ -72,12 +85,20 @@ class BluetoothHandler:
                 BluetoothHandler.cleanUpBT()
                 BluetoothHandler.EndEvent.clear()
                 break
-
+    
+    '''
+    Send utf-8 encoded sting over BT
+    '''
     @classmethod
     def sendToClient(cls, message):
         BluetoothHandler.client_sock.send(message)
-        print("Sending: ", message) 
+        print("============================================================================")
+        print("SENDING: ", message) 
+        print("============================================================================")
 
+    '''
+    Clean up and close BT sockets
+    '''
     @classmethod
     def cleanUpBT(cls):
         BluetoothHandler.client_sock.close()

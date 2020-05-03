@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import Serialise as Serialise
 from Sensor import Sensor
+from TimeSensor import TimeSensor
 
 
 def Singleton(cls):
@@ -22,15 +23,32 @@ class SensorList(object):
     FILE_NAME = "SensorList"
 
     def __init__(self, sensors = []):
-        print("Init Singleton Device List Object")
+        print("Init Singleton Sensor List Object")
         self.sensorList = sensors
         self.counter = 0
 
+    '''
+    Adds a new senor to sensor list
+
+    name: sensor name
+    time: current time
+    temperature: current temperature
+    humidity: current humidity
+    '''
     def addSensor(self, name, time = 0, temperature = 0, humidity = 0):
         print("Adding new sensor! ", name)
         self.counter += 1
         sensor = Sensor(self.counter, name, time, temperature, humidity)
         self.sensorList.append(sensor)
+    
+    '''
+    Adds the default time senesor to sensor list
+
+    name: name of sensor
+    '''
+    def addTimeSensor(self, name):
+        time = TimeSensor(0, name)
+        self.sensorList.append(time)
 
     '''    
     Since the constructor cannot be called agiain in a singleton, this method sets up the default
@@ -39,6 +57,7 @@ class SensorList(object):
     '''
     def setUpDefaultData(self):
         print("Add default sensor data to object")
+        self.addTimeSensor("Time")
         try:
             sensors = self.requestAllData()
             
@@ -52,6 +71,35 @@ class SensorList(object):
             self.counter = i
         except (IOError, OSError, FileNotFoundError) as e:
             self.addSensor("sensor")
+
+    '''
+    Update tempreture for each sensor in senor list when called
+
+    This method requires a connection to the emonHub server to function, must wrap in try catch block
+    '''
+    def updateSensors(self):
+        print("Updating tempreture and time")
+        try:
+            sensors = self.requestAllData()
+            values = list(sensors.values())
+            '''
+            print(values)
+            print(type(values))
+            print(list(values[0]))
+            print(list(values[0])[1])
+            print(values[0][1])
+            '''
+
+            for i in range(0, len(values)):
+                #if i == 0:
+                    #continue
+                self.sensorList[i+1].time = values[i][0]
+                self.sensorList[i+1].temperature = values[i][1]
+                self.sensorList[i+1].humidity = values[i][2]
+
+            self.setSensorObject()
+        except(IOError, OSError, FileNotFoundError, ValueError, KeyError, IndexError) as e:
+            print("Failed to update sensors, make sure emonHub is running")
 
 
     '''
@@ -69,6 +117,8 @@ class SensorList(object):
     Read sensor list from disk, if it does not exist call init to create one with default parameters
 
     Use this method to access the sensor list object
+
+    return: deserialised object or newly created deivce list object
     '''
     def getSensorObject(self):
         try:
@@ -90,9 +140,16 @@ class SensorList(object):
         except (IOError, OSError, FileNotFoundError) as e:
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
+    '''
+    Converts object to string
+
+    return: string format of object
+    '''
     def toStringFormat(self):
+        allSensors = ""
         for i in self.sensorList:
-            print(i.toStringFormat())
+            allSensors = allSensors + i.toStringFormat()
+        return allSensors
     
     '''
     Search for a sensor object by ID, possible that ID and list index are the same
@@ -108,7 +165,9 @@ class SensorList(object):
         
         raise ValueError("ID not found in list")
             
-
+    '''
+    Uses a get request to return a dictionrry contaning sensor data from emonHub service
+    '''
     def requestAllData(self):
         with requests.Session() as session:
             session.auth = ('TheGrind', 'TheGrind')
@@ -129,10 +188,8 @@ class SensorList(object):
         
         for sensor in js:
             currSensor = js[sensor]
-            TemperatureData = currSensor["temperature"]
-            #print("Temperature¬ Time: ", datetime.fromtimestamp(TemperatureData["time"]), "Value: ", TemperatureData["value"]) 
+            TemperatureData = currSensor["temperature"] 
             HumidityData = currSensor["humidity"]
-            #print("Humidity¬ Time:", datetime.fromtimestamp(HumidityData["time"]), "Value: ", HumidityData["value"])
             time = TemperatureData["time"]   
             data.update({sensor : (time, TemperatureData["value"], HumidityData["value"])})
          

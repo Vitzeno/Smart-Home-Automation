@@ -24,8 +24,11 @@ class GroupList(object):
     
     '''
     Creates a group of devices and auto increments ID
+
+    name: group name
+    deivces: devices list
     '''
-    def createGroup(self, name, devices):
+    def createGroup(self, name, devices=[]):
         self.counter += 1
         group = Group(self.counter, name, devices)
         self.groupList.append(group)
@@ -35,10 +38,10 @@ class GroupList(object):
     '''
     def setUpDefaultData(self):
         print("Add default data to object")
-        self.createGroup("Group One", [])
-        self.createGroup("Group Two", [])
-        self.createGroup("Group Three", [])
-        self.createGroup("Group Four", [])
+        self.createGroup("Group_One", [])
+        self.createGroup("Group_Two", [])
+        self.createGroup("Group_Three", [])
+        self.createGroup("Group_Four", [])
         self.counter = 4
     
     '''
@@ -56,6 +59,8 @@ class GroupList(object):
     Read device list from disk, if it does not exist call init to create one with default parameters
 
     Use this method to access the devices list object
+
+    return: deserialised object or newly created deivce list object
     '''
     def getGroupObject(self):
         try:
@@ -77,11 +82,15 @@ class GroupList(object):
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
     '''
-    Prints out group data in string format
+    Converts object to string
+
+    return: string format of object
     '''
     def toStringFormat(self):
+        allGroups = ""
         for i in self.groupList:
-            print(i.toStringFormat())
+            allGroups = allGroups + i.toStringFormat()
+        return allGroups
 
     '''
     Search for a group object by ID, possible that ID and list index are the same

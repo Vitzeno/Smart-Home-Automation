@@ -11,9 +11,11 @@ import os
 import Radio as Radio
 import Serialise as Serialise
 from BluetoothHandler import BluetoothHandler
+from RuleHandler import RuleHandler
 from Devices import Devices
 from DeviceList import DeviceList
 from Parser import Parser
+from ParserException import ParserException
 from Expression import Expression
 from RuleEvaluator import RuleEvaluator
 from RuleList import RuleList
@@ -23,6 +25,7 @@ from Group import Group
 from GroupList import GroupList
 
 running = []
+parser = Parser()
 
 def comms():
     dictionary = Manager().dict()
@@ -38,19 +41,16 @@ def comms():
   
     proc = Process(target = BluetoothHandler.connectBT, args = (dictionary, MessageEvent, EndEvent, ConnectEvent, SendEvent, lock))
     proc.start()
-    switch = True                           ##hack for second obj, remove
 
     print(subprocess.getoutput("hcitool con").split())
 
     ConnectEvent.wait()
     conStatus = True
-    #print(type(dictionary["status"]))
-    try:
-        while conStatus: #dictionary["status"]:
 
-            print(dictionary["name"])
-            print(subprocess.getoutput("hcitool con").split())
-            MessageEvent.wait(2)
+    try:
+        while conStatus: 
+
+            MessageEvent.wait(0.25)
             
             status = subprocess.getoutput("hcitool con").split()
             
@@ -58,82 +58,64 @@ def comms():
                 conStatus = False
 
             if MessageEvent.is_set():
-                print(dictionary["recv"].decode("utf-8"))
-
-                if(dictionary["recv"].decode("utf-8") == 'H'):
-                    Radio.switchSocket(1, True)
-                if(dictionary["recv"].decode("utf-8") == 'L'):
-                    Radio.switchSocket(1, False)
-                
-                if(dictionary["recv"].decode("utf-8") == 'S'):
-                    switch = not switch
-                    Radio.switchSocket(2, switch)
-                pass
-            MessageEvent.clear()
+                print("\n Main Thread Recived: {0} \n" .format(dictionary["recv"].decode("utf-8")))
+                try:
+                    data = parser.parseInput(dictionary["recv"].decode("utf-8"))
+                    if data is not None:
+                        print(data)
+                        if not data:
+                            data = "[Empty List]"
+                        dictionary["write"] = data
+                        SendEvent.set()
+                except (ParserException) as e:
+                    print(e)
+                MessageEvent.clear()
+            
     except (OSError, KeyboardInterrupt) as e:
         EndEvent.set()
         ConnectEvent.clear()
         proc.join()
-        Radio.cleanUp()
         running = False
+        Radio.cleanUp()
+
     
-    Radio.cleanUp()
     EndEvent.set()
     ConnectEvent.clear()
     print("Waiting to join")
     proc.join()
-    Radio.cleanUp()
 
 if __name__ == '__main__':
+    
     Radio.setUp()
     Serialise.setDirectory()
 
     deviceList = DeviceList().getDevicesObject()
-    print(deviceList.toStringFormat())
+    #print(deviceList.toStringFormat())
 
     groupList = GroupList().getGroupObject()
-    print(groupList.toStringFormat())
+    #print(groupList.toStringFormat())
 
     sensorList = SensorList().getSensorObject()
-    print(sensorList.toStringFormat())
-    
+    #print(sensorList.toStringFormat())
+
     ruleList = RuleList().getRuleObject()
-    print(ruleList.toStringFormat())
+    #print(ruleList.toStringFormat())
 
-    s1 = sensorList.getSensorByID(1)
-    s2 = sensorList.getSensorByID(2)
-    #ruleList.createRule("New Rule", [Expression().equalsTo(s1, 22), Expression().greaterThan(s2, 0), "AND"])
-    #ruleList.setRuleObject()
+    #eval = RuleEvaluator()
+    #print("Server Evaluated to: {0}" .format(eval.parseRule(ruleList.getRuleByID(3).rule)))
 
     try:
-        print(groupList.getGroupByID(4).toStringFormat())
-    except (ValueError) as e:
-        print(e)
-    
-    try:
-        print(sensorList.getSensorByID(2).toStringFormat())
-    except (ValueError) as e:
-        print(e)
-    
-    try:
-        print(ruleList.getRuleByID(3).toStringFormat())
-    except (ValueError) as e:
+        (parser.parseInput("R:AR"))
+    except (ParserException) as e:
         print(e)
 
-    p = Parser()
-    # valid commands
-    p.parseInput("R:S:2")
-    p.parseInput("R:R:4")
-    p.parseInput("R:D:7")
-    p.parseInput("R:G:6")
-    p.parseInput("R:AS")
-    p.parseInput("R:AR")
-    p.parseInput("R:AD")
-    p.parseInput("R:AG")
-
+    proc = Process(target = RuleHandler.beginEvaluation)
+    proc.start()
     
     running = True
+    
     while running:
         comms()
+
     Radio.cleanUp()
     print("Gracefully Quit")

@@ -24,9 +24,15 @@ class RuleList(object):
         self.ruleList = rules
         self.counter = 0
     
-    def createRule(self, name, rule):
+    '''
+    Creates a new rule object
+
+    name: name of rule
+    rule: list containing rule
+    '''
+    def createRule(self, name, rule, parsableRule):
         self.counter += 1
-        rule = Rule(self.counter, name, rule)
+        rule = Rule(self.counter, name, rule, parsableRule)
         self.ruleList.append(rule)
     
     '''
@@ -34,9 +40,8 @@ class RuleList(object):
     '''
     def setUpDefaultData(self):
         print("Add default data to object")
-        self.createRule("Rule One", [])
-        self.createRule("Rule Two", [])
-        self.counter = 2
+        self.createRule("Rule_One", ("C:R:C:1:1:2:2:EQ").split(":"), ("C:R:C:1:1:2:2:EQ").split(":")[5:])
+        self.counter = 1
 
     '''
     Init the rule list JSON file and write to disk, default parameters are used
@@ -53,6 +58,8 @@ class RuleList(object):
     Read device list from disk, if it does not exist call init to create one with default parameters
 
     Use this method to access the devices list object
+
+    return: deserialised object or newly created deivce list object
     '''
     def getRuleObject(self):
         try:
@@ -74,11 +81,15 @@ class RuleList(object):
             print("Failed to write new object {0} to file" .format(self.FILE_NAME))
     
     '''
-    Prints out rule data in string format
+    Converts object to string
+
+    return: string format of object
     '''
     def toStringFormat(self):
+        allRules = ""
         for i in self.ruleList:
-            print(i.toStringFormat())
+            allRules = allRules + i.toStringFormat()
+        return allRules
 
     '''
     Search for a rule object by ID, possible that ID and list index are the same
