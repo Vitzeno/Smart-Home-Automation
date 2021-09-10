@@ -10,29 +10,29 @@ The hub is an always running multithreaded program running on the Raspberry Pi c
 To allow for end user programming a simple context free grammar (CFG) was first defined which uses postfix notation for operators. The grammar supports both binary and unary operators and allows for infinite nesting of expression. The server must be able to evaluate user created rules and rules should be simple to communicate over the bluetooth medium. Because of this the parser, which manages the communications protocol and the rule evaluator have slightly different grammar definitions. Whilst the semantics are identical, the syntax for binary operators differ slightly as seen below:
 
 ### Grammar for parser
+```
+Rule  →   Expr Expr BinOp | Expr
 
-Rule => Expr Expr BinOp | Expr
+Expr  →   Expr | Expr UnOp | Expr Expr BinOp | Expr Digit BinOp
 
-Expr => Expr | Expr UnOp | Expr Expr BinOp | Expr Digit BinOp
+Digit →   [0-9]+
 
-Digit => [0-9]+
+BinOp →   GE | LE | EQ | AND | OR
 
-BinOp => GE | LE | EQ | AND | OR
-
-UnOp => NOT
-
+UnOp  →   NOT
+```
 ### Grammar for rule evaluator
+```
+Rule  →   Expr Expr BinOp | Expr
 
-Rule => Expr Expr BinOp | Expr
+Expr  →   Expr | Expr UnOp | Expr Expr BinOp | Expr Digit BinOp
 
-Expr => Expr | Expr UnOp | Expr Expr BinOp | Expr Digit BinOp
+Digit →   [0-9]+
 
-Digit => [0-9]+
+BinOp →   > | < | = | AND | OR
 
-BinOp => > | < | = | AND | OR
-
-UnOp => NOT
-
+UnOp  →   NOT
+```
 ## Mobile Application
 
 -Make sure location permissions are granted for application to work
